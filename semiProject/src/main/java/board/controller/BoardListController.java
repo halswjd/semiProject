@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import board.model.service.BoardService;
 import board.model.vo.Board;
+import board.model.vo.Category;
 import common.model.vo.PageInfo;
 
 
@@ -44,13 +47,18 @@ public class BoardListController extends HttpServlet {
 		int startPage; // 페이징바의 시작수
 		int endPage; // 페이징바의 끝수
 		
+		
+		
 		listCount= new BoardService().selectBoardListCount();
 		
 		currentPage = Integer.parseInt(request.getParameter("cpage"));
 		
 		pageLimit = 5;
 		
-		boardLimit = 15;
+		boardLimit = 10;
+		
+//		boardLimit = Integer.parseInt(request.getParameter("test"));
+		
 		
 		maxPage = (int) Math.ceil((double)listCount / boardLimit);
 		
@@ -64,12 +72,26 @@ public class BoardListController extends HttpServlet {
 		
 		PageInfo pi = new PageInfo(listCount, currentPage, pageLimit, boardLimit, maxPage, startPage, endPage);
 		
+		/*
+		if(request.getParameter("categoryNo") == null) {
+		}else {
+			int categoryNo = Integer.parseInt(request.getParameter("categoryNo"));
+			
+			System.out.println(categoryNo);
+			
+			ArrayList<Board> list = new BoardService().selectSubjectList(pi, categoryNo);
+			request.setAttribute("list", list);
+			
+		}
+		*/
 		ArrayList<Board> list = new BoardService().selectBoardList(pi);
-		
-		request.setAttribute("pi", pi);
 		request.setAttribute("list", list);
 		
+		request.setAttribute("pi", pi);
+		
 		request.getRequestDispatcher("views/board/boardListView.jsp").forward(request, response);
+		
+		
 		
 		
 		

@@ -10,7 +10,7 @@
     <title>Document</title>
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
@@ -107,18 +107,22 @@
             color: gray;
         }
         
+       #mb_logo:hover{
+       		cursor:pointer;
+       }
+
         
     </style>
 </head>
 <body>
     <div class="mb_outer">
         <div class="mb_menu-area">
-            <div id="mb_logo">
-                <img src="../resources/img/logo.png" alt="로고">
+            <div id="mb_logo" onclick="main();">
+                <img src="resources/image/logo.png" alt="로고">
             </div>
             <div id="mb_nav">
                 <ul id="mb_navi">
-                    <li><a href="#">자유게시판</a></li>
+                    <li><a href="<%= contextPath %>/list.bo?cpage=1&test=10">자유게시판</a></li>
                     <li><a href="#">질문게시판</a></li>
                     <li><a href="#">오등완 💪</a></li>
                     <li><a href="#">한국의 산</a></li>
@@ -127,35 +131,56 @@
                 </ul>
             </div>
         </div>
+        <script>
+            $(function(){
+                // 해당 페이지 스타일부여하는 함수
+                const a = location.href;
+                const b = ["/list.bo", "/detail.bo"];
+                
+                console.log(b[1]);
+                let result = 0;
+                
+                for(let i=0; i<b.length; i++){
+                	if(a.search(b[i]) != -1){
+	                    $("#mb_navi").children().eq(0).children().css("border-bottom","5px solid rgb(149, 193, 31)");                	
+                	}	
+                }
+                
+            })
+            
+            function main(){
+            	location.href = "<%= contextPath %>/main.jsp";
+            }
+        </script>
         
         <div class="mb_login-area">
-           <!-- 로그인 후 
-            <div id="user_1">
-
-                <table align="center">
-                    <tr height="75">
-                        <th width="100"><img src="resources/img/image.jpg" alt="프로필사진"></th>
-                        <td width="100" style="font-size: 20px"><b>차은우 님</b></td>
-                    </tr>
-                </table>
-
-
-            </div>
-            <div id="user_2">
-                <table align="center">
-                    <tr height="75" align="center">
-                        <td width="80"><a href="">마이페이지</a></td>
-                        <td width="60"><a href="">로그아웃</a></td>
-                    </tr>
-                </table>
-            </div>
-            -->
-
+           <!-- 로그인 후 -->
             <div id="mb_user_1">
 
                 <table align="center">
                     <tr height="75">
-                        <th width="70"><img width="60" height="60" src="../resources/img/제목 없음.png" alt=""></th>
+                        <th width="70"><img width="65" height="65" src="https://cdn-icons-png.flaticon.com/128/3985/3985429.png" alt=""></th>
+                        <td width="150" style="font-size: 20px; padding-left: 8px;"><b>차은우 님</b></td>
+                    </tr>
+                </table>
+
+
+            </div>
+            <div id="mb_user_2">
+                <table align="center">
+                    <tr height="75" align="center">
+                        <td width="100"><a href="">마이페이지</a></td>
+                        <td width="100"><a href="">로그아웃</a></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 로그인전
+            <div id="mb_user_1">
+
+                <table align="center">
+                    <tr height="75">
+                        <th width="70"><img width="60" height="60" src="resources/image/user.png" alt=""></th>
                         <td width="100" style="font-size: 17px"><b>로그인하세요</b></td>
                     </tr>
                 </table>
@@ -170,6 +195,7 @@
                     </tr>
                 </table>
             </div>
+            -->
 
         </div>
     </div>

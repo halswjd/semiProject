@@ -13,10 +13,13 @@ public class Board {
 	private String createDate;
 	private String status;
 	
+	private int likeCount;
+	private int replyCount;
+	
 	public Board() {}
 
 	public Board(int boardNo, String boardTitle, String boardContent, String hashtag, int count, String boardWriter,
-			String category, int boardType, String createDate, String status) {
+			String category, int boardType, String createDate, String status, int likeCount, int replyCount) {
 		super();
 		this.boardNo = boardNo;
 		this.boardTitle = boardTitle;
@@ -28,12 +31,12 @@ public class Board {
 		this.boardType = boardType;
 		this.createDate = createDate;
 		this.status = status;
+		this.likeCount = likeCount;
+		this.replyCount = replyCount;
 	}
-	
 
-	
-
-	public Board(int boardNo, String boardTitle, int count, String boardWriter, String category, String createDate) {
+	public Board(int boardNo, String boardTitle, int count, String boardWriter, String category, String createDate,
+			int likeCount, int replyCount) {
 		super();
 		this.boardNo = boardNo;
 		this.boardTitle = boardTitle;
@@ -41,6 +44,23 @@ public class Board {
 		this.boardWriter = boardWriter;
 		this.category = category;
 		this.createDate = createDate;
+		this.likeCount = likeCount;
+		this.replyCount = replyCount;
+	}
+	
+
+	public Board(int boardNo, String boardTitle, String boardContent, String hashtag, int count, String boardWriter,
+			String category, String createDate, int replyCount) {
+		super();
+		this.boardNo = boardNo;
+		this.boardTitle = boardTitle;
+		this.boardContent = boardContent;
+		this.hashtag = hashtag;
+		this.count = count;
+		this.boardWriter = boardWriter;
+		this.category = category;
+		this.createDate = createDate;
+		this.replyCount = replyCount;
 	}
 
 	public int getBoardNo() {
@@ -123,14 +143,35 @@ public class Board {
 		this.status = status;
 	}
 
+	public int getLikeCount() {
+		return likeCount;
+	}
+
+	public void setLikeCount(int likeCount) {
+		this.likeCount = likeCount;
+	}
+
+	public int getReplyCount() {
+		return replyCount;
+	}
+
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
+	}
+
 	@Override
 	public String toString() {
 		return "Board [boardNo=" + boardNo + ", boardTitle=" + boardTitle + ", boardContent=" + boardContent
 				+ ", hashtag=" + hashtag + ", count=" + count + ", boardWriter=" + boardWriter + ", category="
-				+ category + ", boardType=" + boardType + ", createDate=" + createDate + ", status=" + status + "]";
-	};
+				+ category + ", boardType=" + boardType + ", createDate=" + createDate + ", status=" + status
+				+ ", likeCount=" + likeCount + ", replyCount=" + replyCount + "]";
+	}
+
+	
+
 	
 	
 	
+
 }
 

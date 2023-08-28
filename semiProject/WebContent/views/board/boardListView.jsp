@@ -1,3 +1,4 @@
+<%@page import="board.model.vo.Category"%>
 <%@page import="board.model.vo.Board"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="common.model.vo.PageInfo"%>
@@ -6,25 +7,32 @@
 <% 
 	PageInfo pi = (PageInfo)request.getAttribute("pi");
 	ArrayList<Board> list = (ArrayList<Board>)request.getAttribute("list");
+	// 글번호, 글제목, 조회수, 닉네임, 카테고리명, 작성일, 좋아요수, 댓글수
+	
+	// ArrayList<Category> categoryList = (ArrayList<Category>)request.getAttribute("categoryList");
 	
 	int currentPage = pi.getCurrentPage();
 	int startPage = pi.getStartPage();
 	int endPage = pi.getEndPage();
 	int maxPage = pi.getMaxPage();
+	
+	
 %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>MOUNTAINEER - 자유게시판</title>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css" rel="stylesheet">
     <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <style>
         .outer{
             width: 1200px;
@@ -70,9 +78,10 @@
         input[type=text]{
             margin-left: 10px;
             width: 190px;
-            margin-top: 10px; 
+            height: 30px;
+            margin-top: 4px; 
             border: none; 
-            font-size: 13px;
+            font-size: 15px;
         }
         .btn-secondary{
             width: 100px;
@@ -80,7 +89,7 @@
             margin-left: 5px;
         }
         button>img{
-            width: 25px;
+            width: 25px; 
             height: 25px;
         }
         .img-button{
@@ -90,7 +99,7 @@
 
         .list{
             width: 100%;
-            height: 300px;
+            /*height: 300px;*/
             /* border: 1px solid blue; */
         }
 
@@ -116,8 +125,33 @@
             height: 35px;
 
         }
-        
+        #title{
+            color: rgb(149, 193, 31);
+            font-weight: bolder;
+            margin: 70px;
+            letter-spacing: 5px;
+        }
 
+        #filter select, #search select{
+            font-size: 14px;
+        }
+        #search-option{
+            margin-right: 5px;
+        }
+		
+		.list-area>tbody span{
+            margin-left: 8px;
+			color: red;
+            font-size: 13px;
+            font-weight: bolder;
+			border: 1px solid lightgray;
+            border-radius: 45%;
+            display: inline-block;
+            width: 25px;
+            height: 23px;
+            text-align: center;
+            line-height: 1.8;
+		}
     </style>
 </head>
 <body>
@@ -125,26 +159,80 @@
 	
 	<div class="outer">
         <div class="wrap">
+            <h1 align="center" id="title">자유게시판</h1>
             <div id="header">
                 <div id="filter">
-                    <select name="subject" id="">
-                        <option value="">선택안함</option>
-                        <option value="">일상</option>
-                        <option value="">유머</option>
-                        <option value="">제품추천</option>
-                        <option value="">사담</option>
+                    <select name="subject">
+                        
                     </select>
-                    <select name="order" id="">
-                        <option value="">최신글순</option>
-                        <option value="">추천순</option>
-                        <option value="">댓글순</option>
-                        <option value="">조회순</option>
+                    <select name="test" id="test">
+                    	<option value="">보기선택</option>
+                        <option value="10">10개씩</option>
+                        <option value="15">15개씩</option>
+                        <option value="20">20개씩</option>
                     </select>
                 </div>
+                <script>
+                	// 보기선택 함수
+                	/*
+                	$("select[name=test]").change(function(){
+                		console.log($(this).val());
+                		location.href = "<%= contextPath%>/list.bo?cpage=1&test=" + $(this).val();
+                	})
+                	*/
+                	
+                	// 카테고리 불러오는 함수
+                	$(function(){
+                		$.ajax({
+                			url:"list.category",
+                			success:function(list){
+                				// console.log(list);
+                				let result = "<option>말머리 선택</option>";
+                				for(let i=0; i<list.length; i++){
+                					result += "<option value=" + list[i].categoryNo + ">"
+                							+ list[i].categoryName + "</option>"
+                				}
+                				
+                				$("select[name=subject]").html(result);
+                				
+                			}, 
+                			error:function(){
+                				console.log("실패");
+                			}
+                		})
+                	})
+
+                	// 말머리선택 함수
+                    $("select[name=subject]").change(function(){
+                        console.log($(this).val());
+                        location.href = "<%= contextPath%>/list.bo?cpage=1&test=10&categoryNo=" + $(this).val();
+                        
+                        
+                        /*
+                        $.ajax({
+                            url:"list.bo",
+                            data:{categoryNo:$(this).val(),
+                            test:"10",
+                            cpage:"1"
+                            },
+                            success:function(){
+                                console.log("성공");
+                            },
+                            error:function(){
+                                console.log("실패");
+                            }
+                            
+                        })
+                     
+                        */
+                    })
+                    
+                   
+                </script>
     
                 <div id="search">
                     <form action="">
-                        <select name="" id="">
+                        <select name="" id="search-option">
                             <option value="">제목+내용</option>
                             <option value="">글제목</option>
                             <option value="">글쓴이</option>
@@ -155,7 +243,7 @@
                             <input type="text" placeholder=" 검색어를 입력하세요">
                             <!-- <button type="submit">검색</button> -->
                             <button type="submit" class="img-button">
-                                <img src="resources/search.png" alt="">
+                                <img src="resources/image/search.png" alt="">
                             </button>
                         </div>
                     </form>
@@ -175,14 +263,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <% for(Board b : list){ %>
+                    <!-- 
                         <tr align="center">
-                            <td width="80"><%= b.getBoardNo() %></td>
-                            <td width="60">[ <%= b.getCategory()%> ]</td>
-                            <td align="left" style="padding-left: 10px;"><%= b.getBoardTitle() %></td>
+                            <td>공지</td>
+                            <td colspan="3"></td>
+                            <td>작성일</td>
+                            <td>추천</td>
+                            <td>조회수</td>
+                        </tr>
+                     -->
+                    <% for(Board b : list){ %>
+                    	
+                        <tr align="center">
+                            <td width="80" style="color: gray;"><%= b.getBoardNo() %></td>
+                            <td width="60">[<%= b.getCategory()%>]</td>
+                            <% if(b.getReplyCount() == 0){ %>
+                            	<td align="left" style="padding-left: 10px;"><%= b.getBoardTitle() %></td>
+                            <%}else{ %>
+                            	<td align="left" style="padding-left: 10px;"><%= b.getBoardTitle() %> <span><%=b.getReplyCount() %></span></td>
+                            <%} %>
+                            
                             <td><%= b.getBoardWriter() %></td>
                             <td><%= b.getCreateDate() %></td>
-                            <td>추천수</td>
+                            <td><%= b.getLikeCount() %></td>
                             <td><%= b.getCount() %></td>
                         </tr>
                      <%} %>
@@ -190,11 +293,21 @@
                     </tbody>
                 </table>
             </div>
+            
+            <script>
+            	// 게시글 상세이동 함수
+            	$(".list-area").children("tbody").children("tr").click(function(){
+            		
+            		location.href="<%= contextPath%>/detail.bo?bno=" + $(this).children().eq(0).text();
+            	});
+            </script>
 
             <div class="paging-area" align="center">
             
             	<% if(currentPage != 1){ %>
             		<button onclick="location.href='<%= contextPath %>/list.bo?cpage=<%= currentPage -1 %>'"> &lt; </button>
+            	<%} else{%>
+            		<button disabled> &lt; </button>
             	<%} %>
             	
             	<% for(int p = startPage; p <= endPage; p++){ %>
@@ -209,47 +322,10 @@
 	            	<button onclick="location.href='<%= contextPath %>/list.bo?cpage=<%= currentPage +1 %>'"> &gt; </button>
 	            <%} %>
             	
-            	<!-- 
-                <button disabled> &lt; </button>
-                <button style="border: 1px solid lightgray; font-weight: bolder;">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>4</button>
-                <button>5</button>
-                <button> &gt; </button>
-                 -->
+            	
             </div>
             
-            <!-- 
-            <script>
-            	
-            	let listCount; // 총 게시글 개수
-            	let currentPage; // 사용자 요청 페이지
-            	let pageLimit; // 페이징바 페이지 최대개수(몇개 단위씩)
-            	let boardLimit; // 한 페이지내에 보여질 게시글 최대개수
-            	
-            	let selectList; // db에서 받아온 게시글 리스트
-            	
-            	$(function(){
-            		selectBoardList();
-            		
-            		
-            		
-            	})
-            	
-            	function selectBoardList(){
-            		
-            		$.ajax({
-            			url:"/semi/list.bo",
-            			success:function(list){
-            				selectList = list.
-            			}
-            			
-            		})
-            		
-            	}
-            </script>
-             -->
+        
             
             
             

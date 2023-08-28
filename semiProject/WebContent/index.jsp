@@ -7,7 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<a href="/semi/listView.bo">자유게시판</a>
+	<a href="views/common/menubar.jsp">메뉴바</a>
+	<a href="/semi/list.bo?cpage=1">자유게시판</a>
 
 </body>
 </html>
