@@ -15,6 +15,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+ <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
 <style>
         .outer{
@@ -91,8 +93,10 @@
             font-family: 'NanumBarunGothic';
         }
 
-        #bar{
-            /* border: 1px solid black; */
+        #bar>button{
+            border: none;
+            background-color: rgba(0, 0, 0, 0);
+            font-size: 13px;
         }
         .hashtag{
             display: inline-block;
@@ -102,10 +106,14 @@
             padding-bottom: 5px;
             border-radius: 10%;
             color:white;
-            background-color: lightgray;
+            background-color: rgb(190, 188, 188);
             margin-right: 4px;
             font-size: 15px;
-        }li oy80
+        }
+
+        #hashtag{
+            padding-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -113,11 +121,11 @@
     <div class="outer">
         <div class="wrap">
             <div id="header">
-                <di id="subject"><%= b.getCategory() %></di v>
+                <div id="subject"><%= b.getCategory() %></div>
                 <div id="title"><%= b.getBoardTitle() %></div>
                 <div id="writer"><%= b.getBoardWriter() %></div>
                 <div id="h_etc">
-                    <span>작성일자 <%= b.getCreateDate() %></span>
+                    <span><%= b.getCreateDate() %></span>
                     <span>조회수 <%= b.getCount() %></span>
                 </div>
                 
@@ -136,7 +144,8 @@
             
             
             <div id="bar" align="right">
-                <button onclick="test(this);">좋아요</button>
+                <button id="like1" onclick="test();">좋아요 🤍</button>
+                <!-- <button id="like2">좋아요 💚</button> -->
                 <button>북마크</button>
                 <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
             </div>
@@ -163,11 +172,26 @@
             </div>
         </div>
     </div>
+    <input name="bno" type="hidden" value="<%= b.getBoardNo()%>">
 
     <script>
-        function test(e){
-           $(e).css("backgroundColor","black");
-        }    
+    	$(function(){
+    		
+	        function test(){
+	        	let bno = $("input[name=bno]").val();
+	            
+	           $.ajax({
+	            url:"like.bo",
+	            data:{boardNo:bno},
+	            success:function(){
+	                console.log("성공")
+	            },
+	            error:function(){
+	                console.log("실패")
+	            }
+	           })
+	        }    
+    	})
     </script>
 
     <div class="modal" id="reportBoard">
