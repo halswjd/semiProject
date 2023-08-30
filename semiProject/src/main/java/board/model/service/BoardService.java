@@ -12,29 +12,29 @@ import static common.JDBCTemplate.*;
 
 public class BoardService {
 	
-	public int selectBoardListCount() {
-		
-		Connection conn = getConnection();
-		
-		int count = new BoardDao().selectBoardListCount(conn);
-		
-		close(conn);
-		
-		return count;
-		
-	}
-
-	public ArrayList<Board> selectBoardList(PageInfo pi){
-		
-		Connection conn = getConnection();
-		
-		ArrayList<Board> list = new BoardDao().selectBoardList(conn, pi);
-		
-		close(conn);
-		
-		return list;
-	}
-	
+//	public int selectBoardListCount() {
+//		
+//		Connection conn = getConnection();
+//		
+//		int count = new BoardDao().selectBoardListCount(conn);
+//		
+//		close(conn);
+//		
+//		return count;
+//		
+//	}
+//
+//	public ArrayList<Board> selectBoardList(PageInfo pi){
+//		
+//		Connection conn = getConnection();
+//		
+//		ArrayList<Board> list = new BoardDao().selectBoardList(conn, pi);
+//		
+//		close(conn);
+//		
+//		return list;
+//	}
+//	
 	public ArrayList<Board> ajaxBoardList(){
 		
 		Connection conn = getConnection();
@@ -56,18 +56,18 @@ public class BoardService {
 		
 		return categoryList;
 	}
-	
-	public ArrayList<Board> selectSubjectList(PageInfo pi, int categoryNo){
-		
-		Connection conn = getConnection();
-		
-		ArrayList<Board> list = new BoardDao().selectSubjectList(conn, pi, categoryNo);
-		
-		close(conn);
-		
-		return list;
-	}
-	
+//	
+//	public ArrayList<Board> selectSubjectList(PageInfo pi, int categoryNo){
+//		
+//		Connection conn = getConnection();
+//		
+//		ArrayList<Board> list = new BoardDao().selectSubjectList(conn, pi, categoryNo);
+//		
+//		close(conn);
+//		
+//		return list;
+//	}
+//	
 	public int increaseCount(int boardNo) {
 		
 		Connection conn = getConnection();
@@ -185,5 +185,16 @@ public class BoardService {
 		
 		return count;
 		
+	}
+	
+	public ArrayList<Board> categoryBoardList(int categoryNo){
+		
+		Connection conn = getConnection();
+		
+		ArrayList<Board> list = new BoardDao().categoryBoardList(conn, categoryNo);
+		
+		close(conn);
+		
+		return list;
 	}
 }

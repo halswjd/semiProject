@@ -15,7 +15,6 @@
 
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script> -->
 <script
 	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script
@@ -168,21 +167,21 @@ button>img {
 	text-align: center;
 	line-height: 1.8;
 }
-ul {
+#paging-area {
     text-align: center;
     display: inline-block;
     border: 1px solid #ccc;
     border-right: 0;
 	padding-left :0;
 }
-ul li {
+#paging-area li {
     text-align: center;
     float: left;
 	list-style:none;
 
 }
 
-ul li a {
+#paging-area li a {
     display: block;
     font-size: 14px;
 	color: black;
@@ -201,9 +200,10 @@ ul li a {
 			<h1 align="center" id="title">자유게시판</h1>
 			<div id="header">
 				<div id="filter">
-					<select name="subject">
+					<select id="subject">
 
-					</select> <select name="test" id="boardLimit">
+					</select> 
+					<select id="boardLimit">
 						<option value="10">10개씩</option>
 						<option value="15">15개씩</option>
 						<option value="20">20개씩</option>
@@ -257,15 +257,7 @@ ul li a {
 						</tr>
 					</thead>
 					<tbody>
-						<!-- 
-                        <tr align="center">
-                            <td>공지</td>
-                            <td colspan="3"></td>
-                            <td>작성일</td>
-                            <td>추천</td>
-                            <td>조회수</td>
-                        </tr>
-                     -->
+						
 						<tr align="center">
 							<td width="80" style="color: gray;">글번호</td>
 							<td width="60">[카테고리]</td>
@@ -280,16 +272,6 @@ ul li a {
 					</tbody>
 				</table>
 			</div>
-
-			<script>
-            	// 게시글 상세이동 함수
-            	$(".list-area").children("tbody").children("tr").click(function(){
-            		
-            		location.href="<%=contextPath%>
-				/detail.bo?bno="
-									+ $(this).children().eq(0).text();
-						});
-			</script>
 
 			<ul id="paging-area">
 
@@ -307,15 +289,38 @@ ul li a {
 		function loginAlert() {
 			alert('로그인 후 이용가능합니다 ~!');
 		}
+		
+		// 카테고리 불러오는 함수
+    	$(function(){
+    		$.ajax({
+    			url:"list.category",
+    			success:function(list){
+    				// console.log(list);
+    				let result = "<option>말머리 선택</option>";
+    				for(let i=0; i<list.length; i++){
+    					result += "<option value=" + list[i].categoryNo + ">"
+    							+ list[i].categoryName + "</option>"
+    				}
+    				
+    				$("#subject").html(result);
+    				
+    			}, 
+    			error:function(){
+    				console.log("실패");
+    			}
+    		})
+    	})
 
 		let listCount; // 총 게시글 수
 		let boardLimit; // 한 페이지내에 보여질 게시글 최대 개수
 		let pageLimit = 5; // 페이징 최대개수
 		let globalCurrentPage = 1; // 현재 페이지
 		let dataList; // 데이터 리스트
+
+
+		let categoryDataList;
+		let categoryListCount;
 		
-		//let maxPage;
-		//let selectedPage;
 
 		$(function() {
 
@@ -324,14 +329,16 @@ ul li a {
 			console.log(boardLimit);
 
 			$.ajax({
-				url : "/semi/list.bo",
+				url : "list.bo",
 				success : function(list) {
-					console.log("length" + list.length);
+					console.log("총 length" + list.length);
 					listCount = list.length;
 					dataList = list;
 
 					// 글 목록 불러오기 호출
 					displayData(1, boardLimit);
+					// 페이징 표시 호출
+					paging(listCount, boardLimit, pageLimit, 1);
 				},
 				error : function() {
 					console.log("실패@");
@@ -339,9 +346,36 @@ ul li a {
 
 			});
 
-			// 페이징 표시 호출
-			paging(listCount, boardLimit, pageLimit, 1);
 
+		})
+
+		// 말머리 선택 리스트
+		$("#subject").on("change",function(){
+			console.log($(this).val());
+
+			// boardLimit 설정
+			boardLimit = $("#boardLimit").val();
+			console.log(boardLimit);
+
+			$.ajax({
+				url:"categoryList.bo",
+				data:{categoryNo:$(this).val()},
+				success:function(list){
+					console.log("성공");
+					console.log("말머리 length : " + list.length);
+					categoryListCount = list.length;
+					categoryDataList = list;
+
+					// 글 목록 불러오기 호출
+					displayData(1, boardLimit);
+					// 페이징 표시 호출
+					paging(categoryListCount, boardLimit, pageLimit, 1);
+					
+				},
+				error:function(){
+					console.log("실패");
+				}
+			})
 		})
 
 		function displayData(currentPage, boardLimit) {
@@ -354,17 +388,16 @@ ul li a {
 			let start = (currentPage - 1) * boardLimit;
 			let end = (currentPage - 1) * boardLimit + boardLimit;
 
-			for (let i = start; i < end; i++) {
+			for (let i = start; i < end && i<listCount; i++) {
+
 				charHtml += '<tr align="center">'
-						+ '<td width="80" style="color: gray;">'
-						+ dataList[i].boardNo + '</td>' + '<td width="60">['
-						+ dataList[i].category + ']</td>'
-						+ '<td align="left" style="padding-left : 10px;">'
-						+ dataList[i].boardTitle + '</td>' + '<td>'
-						+ dataList[i].boardWriter + '</td>' + '<td>'
-						+ dataList[i].createDate + '</td>' + '<td>'
-						+ dataList[i].likeCount + '</td>' + '<td>'
-						+ dataList[i].count + '</td>' + '</tr>';
+						+ '<td width="80" style="color: gray;">'+ dataList[i].boardNo + '</td>' 
+						+ '<td width="60">[' + dataList[i].category + ']</td>'
+						+ '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '</td>' 
+						+ '<td>'+ dataList[i].boardWriter + '</td>' 
+						+ '<td>'+ dataList[i].createDate + '</td>'
+						+ '<td>'+ dataList[i].likeCount + '</td>' 
+						+ '<td>'+ dataList[i].count + '</td>' + '</tr>';
 
 			}
 
@@ -375,6 +408,7 @@ ul li a {
 			
 			
 			maxPage = Math.ceil(listCount/boardLimit); // 총 페이징 수
+			console.log("max:"+maxPage);
 			
 			if(maxPage < pageLimit){
 				pageLimit = maxPage;
@@ -437,13 +471,21 @@ ul li a {
 			});
 			
 		}
-		
 		$("#boardLimit").change(function(){
 			boardLimit = $("#boardLimit").val();
 			
-			paging(listCount, boardLimit, pageLimit, globalCurrentPage);
-			displayData(globalCurrentPage, boardLimit);
+			displayData(1, boardLimit);
+			paging(listCount, boardLimit, pageLimit, 1);
 		});
+		
+		// 게시글 상세이동 함수
+		$(".list-area").children("tbody").on("click","tr",function(){
+    		location.href="<%=contextPath%>/detail.bo?bno=" + $(this).children().eq(0).text();
+		})
+		
+			
+		
+		
 	</script>
 
 

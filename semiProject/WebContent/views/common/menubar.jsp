@@ -135,10 +135,11 @@
         </div>
         <script>
  			/*       
+            */
             $(function(){
                 // 해당 페이지 스타일부여하는 함수
                 const a = location.href;
-                const b = ["/list.bo", "/detail.bo"];
+                const b = ["/listView.bo", "/detail.bo"];
                 
                 console.log(b[1]);
                 let result = 0;
@@ -150,7 +151,6 @@
                 }
                 
             })
-            */
             function main(){
             	location.href = "<%= contextPath %>/main.jsp";
             }
