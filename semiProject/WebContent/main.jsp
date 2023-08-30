@@ -301,7 +301,7 @@
         <div id="navigator">
              <ul id="navi">
                     <li>
-                        <a href="<%= contextPath%>/views/board/boardListView2.jsp">자유게시판</a>
+                        <a href="<%= contextPath%>/listView.bo">자유게시판</a>
                     </li>
                     <li>
                         <a href="#">질문게시판</a>

@@ -124,7 +124,7 @@
             </div>
             <div id="mb_nav">
                 <ul id="mb_navi">
-                    <li><a href="<%= contextPath %>/list.bo?cpage=1&test=10">자유게시판</a></li>
+                    <li><a href="<%= contextPath %>/listView.bo">자유게시판</a></li>
                     <li><a href="#">질문게시판</a></li>
                     <li><a href="#">오등완 💪</a></li>
                     <li><a href="#">한국의 산</a></li>

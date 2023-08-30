@@ -20,7 +20,7 @@ import common.model.vo.PageInfo;
 /**
  * Servlet implementation class BoardListViewController
  */
-@WebServlet("/list.bo")
+@WebServlet("/list.board")
 public class BoardListController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
