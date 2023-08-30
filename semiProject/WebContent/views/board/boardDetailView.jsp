@@ -6,8 +6,12 @@
 	Board b = (Board)request.getAttribute("b");
 	// 글번호, 글제목, 글내용, 해시태그, 조회수, 닉네임, 말머리, 작성일자, 댓글수
 	
+	String[] hashtagList = new String[10];
+	
+	if(b.getHashtag() != null){
 	String hashtag = b.getHashtag().trim().replaceAll(" ", "");
-	String[] hashtagList = hashtag.split("#");
+	hashtagList = hashtag.split("#");				
+	}
 	
 %>
 <!DOCTYPE html>
@@ -17,7 +21,7 @@
 <title>Insert title here</title>
  <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+
 <style>
         .outer{
             width: 1200px;
@@ -96,7 +100,7 @@
         #bar>button{
             border: none;
             background-color: rgba(0, 0, 0, 0);
-            font-size: 13px;
+            font-size: 14px;
         }
         .hashtag{
             display: inline-block;
@@ -113,6 +117,10 @@
 
         #hashtag{
             padding-left: 10px;
+        }
+        
+        .modal-body>form>p{
+            margin: 10px;
         }
     </style>
 </head>
@@ -134,20 +142,25 @@
                <%= b.getBoardContent() %>
             </div>
             <div id="hashtag">
+            <%if(hashtagList[0] != null){ %>
                 <% for(int i=1; i<hashtagList.length; i++){ %>
                 <div class="hashtag">
                     # <%= hashtagList[i] %>
                 </div>
                 <%} %>
+            <%}else{ %>
+            	<div></div>
+            <%} %>
             </div>
             
             
             
             <div id="bar" align="right">
-                <button id="like1" onclick="test();">좋아요 🤍</button>
-                <!-- <button id="like2">좋아요 💚</button> -->
-                <button>북마크</button>
                 <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
+                <button id="like1" onclick="insertLike();">좋아요 🤍</button>
+                <button id="like2" style="display: none;" onclick="deleteLike();">좋아요 💚</button>
+                <button id="bookmark1" onclick="insertBook();"><img src="resources/image/bookmark_blank.png" width="25" height="25"></button>
+                <button id="bookmark2" onclick="deleteBook();" style="display: none;"><img src="resources/image/bookmark.png" width="25" height="25"></button>
             </div>
             <div id="comment">
                 <div id="comment-area2">
@@ -173,25 +186,139 @@
         </div>
     </div>
     <input name="bno" type="hidden" value="<%= b.getBoardNo()%>">
+    <input name="userNo" type="hidden" value="3">
 
     <script>
-    	$(function(){
-    		
-	        function test(){
-	        	let bno = $("input[name=bno]").val();
-	            
-	           $.ajax({
-	            url:"like.bo",
-	            data:{boardNo:bno},
-	            success:function(){
-	                console.log("성공")
-	            },
-	            error:function(){
-	                console.log("실패")
-	            }
-	           })
-	        }    
-    	})
+ 		// ----- 좋아요 관련 -----------
+        function insertLike(){
+        	let bno = $("input[name=bno]").val();
+            let userNo = $("input[name=userNo]").val();
+            
+           $.ajax({
+            url:"like.bo",
+            data:{boardNo:bno, userNo:userNo},
+            success:function(result){
+                console.log("성공")
+                if(result == 'Y'){
+                	$("#like1").css("display", "none");
+                    $("#like2").css("display", "");
+                }
+            },
+            error:function(){
+                console.log("실패")
+            }
+           })
+        }
+        
+        function deleteLike(){
+        	let bno = $("input[name=bno]").val();
+            let userNo = $("input[name=userNo]").val();
+            
+           $.ajax({
+            url:"likeDelete.bo",
+            data:{boardNo:bno, userNo:userNo},
+            success:function(result){
+                console.log("성공")
+                if(result == 'Y'){
+                	$("#like2").css("display", "none");
+                    $("#like1").css("display", "");
+                }
+            },
+            error:function(){
+                console.log("실패")
+            }
+           })
+        }
+        
+        $(function(){
+            let bno = $("input[name=bno]").val();
+            let userNo = $("input[name=userNo]").val();
+
+            $.ajax({
+                url:"likeCheck.bo",
+                data:{boardNo:bno, userNo:userNo},
+                success:function(result){
+                    console.log("성공");
+                    if(result == 'Y'){
+                    	$("#like2").css("display", "");
+                        $("#like1").css("display", "none");
+                    }else{
+                    	$("#like2").css("display", "none");
+                        $("#like1").css("display", "");                    	
+                    }
+                },
+                error:function(result){
+                    console.log("실패");
+                }
+            })
+        })
+	
+		// ----- 북마크 관련 -----------
+
+        function insertBook(){
+            let bno = $("input[name=bno]").val();
+            let userNo = $("input[name=userNo]").val();
+            
+           $.ajax({
+            url:"book.bo",
+            data:{boardNo:bno, userNo:userNo},
+            success:function(result){
+                console.log("성공")
+                if(result == 'Y'){
+                	$("#bookmark1").css("display", "none");
+                    $("#bookmark2").css("display", "");
+                }
+            },
+            error:function(){
+                console.log("실패")
+            }
+           })
+        }
+
+        function deleteBook(){
+            let bno = $("input[name=bno]").val();
+            let userNo = $("input[name=userNo]").val();
+            
+           $.ajax({
+            url:"deleteBook.bo",
+            data:{boardNo:bno, userNo:userNo},
+            success:function(result){
+                console.log("성공")
+                if(result == 'Y'){
+                	$("#bookmark1").css("display", "");
+                    $("#bookmark2").css("display", "none");
+                }
+            },
+            error:function(){
+                console.log("실패")
+            }
+           })
+        }
+        
+        $(function(){
+            let bno = $("input[name=bno]").val();
+            let userNo = $("input[name=userNo]").val();
+
+            $.ajax({
+                url:"bookCheck.bo",
+                data:{boardNo:bno, userNo:userNo},
+                success:function(result){
+                    console.log("성공");
+                    if(result == 'Y'){
+                    	$("#bookmark2").css("display", "");
+                        $("#bookmark1").css("display", "none");
+                    }else{
+                    	$("#bookmark2").css("display", "none");
+                        $("#bookmark1").css("display", "");                    	
+                    }
+                },
+                error:function(result){
+                    console.log("실패");
+                }
+            })
+        })
+
+
     </script>
 
     <div class="modal" id="reportBoard">
@@ -200,42 +327,41 @@
       
             <!-- Modal Header -->
             <div class="modal-header">
-              <h4 class="modal-title">신고하기</h4>
+              <h4 class="modal-title"><b>신고하기</b></h4>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
       
             <!-- Modal body -->
-            <div class="modal-body" align="center">
+            <div class="modal-body">
               <form action="" method="post">
-                <table>
-                    <tr style="font-size: 14px;">
-                        <td width="60px">작성자</td>
-                        <td style="color: gray;"><%= b.getBoardWriter() %></td>
-                    </tr>
-                    <tr style="font-size: 14px;">
-                        <td>제목</td>
-                        <td style="color: gray;"><%= b.getBoardTitle() %></td>
-                    </tr>
-                </table>
+                <p>작성자 : <%= b.getBoardWriter() %> </p>
+                <p>글 제목 : <%= b.getBoardTitle() %> </p>
                 <hr>
-                <input type="radio" id="r1">
-                <label for="r1">토픽에 맞지 않는 글</label> <br>
-                <input type="radio" id="r1">
-                <label for="r1">토픽에 맞지 않는 글</label> <br>
-                <input type="radio" id="r1">
-                <label for="r1">토픽에 맞지 않는 글</label> <br>
-                <input type="radio" id="r1">
-                <label for="r1">토픽에 맞지 않는 글</label> <br>
+                
+                    <input type="radio" id="r1" name="report">
+                    <label for="r1">영리목적/홍보성</label><br>
+                    <input type="radio" id="r2" name="report">
+                    <label for="r2">욕설/인신공격</label> <br>
+                    <input type="radio" id="r3" name="report">
+                    <label for="r3">같은 내용 반복(도배)</label> <br>
+
+
+                    <input type="radio" id="r4" name="report">
+                    <label for="r4">개인정보노출</label> <br>
+                    <input type="radio" id="r4" name="report">
+                    <label for="r4">불법정보</label><br>
+                    <input type="radio" id="r4" name="report">
+                    <label for="r4">음란성/선정성</label> <br>
         
-                <textarea name="" style="resize: none;" placeholder=" 신고 사유 설명이 필요하신 경우 작성해주세요."></textarea>
-                <br><button type="submit" id="rpt_btn">신고</button>
+                <textarea name="" style="resize: none;" placeholder=" 신고 사유 설명이 필요하신 경우 작성해주세요." cols="50" rows="3" style="margin: 20px;"></textarea>
+                <br><button type="submit" class="btn btn-secondary" id="rpt_btn" style="width: 100%; height: 40px; margin-top: 15px;">신고</button>
               </form>
             </div>
   
             </div>
             
           </div>
-         </div>
       </div>
+    </div>
 </body>
 </html>

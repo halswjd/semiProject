@@ -1,4 +1,4 @@
-package board.controller;
+package member.controller;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -7,19 +7,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import board.model.service.BoardService;
+import member.model.service.MemberService;
 
 /**
- * Servlet implementation class BoardLikeController
+ * Servlet implementation class AjaxNickCheckController
  */
-@WebServlet("/like.bo")
-public class BoardLikeController extends HttpServlet {
+@WebServlet("/nickCheck.me")
+public class AjaxNickCheckController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardLikeController() {
+    public AjaxNickCheckController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -28,19 +28,16 @@ public class BoardLikeController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String checkNick = request.getParameter("checkNick");
 		
-		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
-		int userNo = Integer.parseInt(request.getParameter("userNo"));
-//		System.out.println("bno : " + boardNo +  "uno : " + userNo);
+		int count = new MemberService().nickCheck(checkNick);
 		
-		int result = new BoardService().insertLike(userNo, boardNo);
-		
-		if(result > 0) {
-			response.getWriter().print("Y");
+		if(count > 0) {
+			response.getWriter().print("NNNNN");
 		}else {
-			response.getWriter().print("N");
+			response.getWriter().print("NNNNY");
 		}
-		
+
 		
 	}
 

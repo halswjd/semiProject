@@ -10,16 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import board.model.service.BoardService;
 
 /**
- * Servlet implementation class BoardLikeController
+ * Servlet implementation class BookmarkCheckController
  */
-@WebServlet("/like.bo")
-public class BoardLikeController extends HttpServlet {
+@WebServlet("/bookCheck.bo")
+public class BookmarkCheckController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardLikeController() {
+    public BookmarkCheckController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -31,16 +31,16 @@ public class BoardLikeController extends HttpServlet {
 		
 		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
 		int userNo = Integer.parseInt(request.getParameter("userNo"));
-//		System.out.println("bno : " + boardNo +  "uno : " + userNo);
 		
-		int result = new BoardService().insertLike(userNo, boardNo);
 		
-		if(result > 0) {
+		int count = new BoardService().checkBook(userNo, boardNo);
+		
+		if(count > 0) {
 			response.getWriter().print("Y");
 		}else {
 			response.getWriter().print("N");
+			
 		}
-		
 		
 	}
 

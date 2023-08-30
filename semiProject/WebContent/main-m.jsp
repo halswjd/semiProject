@@ -1,10 +1,7 @@
-<%@page import="member.model.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%
+<% 
 	String contextPath = request.getContextPath();
-	Member loginMember = (Member)session.getAttribute("loginMember");
-	String alertMsg = (String)session.getAttribute("alertMsg");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +13,9 @@
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css" rel="stylesheet">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
 
     <!-- Popper JS -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -66,6 +66,7 @@
         height: 80%;
         margin: auto;
         margin-top: 8px;
+        margin-right: px;
         /* border: 1px solid blue; */
         }
 
@@ -105,7 +106,7 @@
         #h4 a, #h5 a, #h6 a{/*vertical-align: middle;*/ 
             padding-top: 60px;
         }
-        #h4 a{font-size: 20px; padding-top: 57px;}
+        #h4 a{font-size: 20px;}
         #profile{
             display: block; 
             /* width: 100%;  */
@@ -192,12 +193,6 @@
         }
         #b5{height: 92.5%;}
         
-        #writers{
-            border-bottom: 1px solid #b3b0b0;
-            width: 90%;
-            padding: 5px;
-        }
-        
         /* 광고1 */
         #add1, #add2{
             width: 100%; 
@@ -218,21 +213,15 @@
         #main1{
             margin-bottom: 25px;
         }
+
         .subtitle{
             font-size: 100px;
         }
+
     </style>
     
 </head>
 <body>
-	<% if(alertMsg != null) { %>
-		<script>
-			alert("<%= alertMsg %>");
-		</script>
-		<% session.removeAttribute("alertMsg"); %>		
-		<!-- 임베디드 하면 세션이 다 날아가서 안됨 -->
-	<% } %>
-
     <div class="wrap">
         <div id="header">
             <div id="h1">
@@ -255,45 +244,27 @@
                     <img src="https://cdn-icons-png.flaticon.com/128/3985/3985429.png" id="profile" alt="" width="70" height="70">
                 </a>
             </div>
+            <div id="h4">
+                <a href="#" style="font-weight: bolder; text-align: left; line-height: 1.2;">환영합니다</a>
+            </div>
+            <div id="h5">
+                <a href="#">로그인</a>
+            </div>
+            <div id="h6">
+                <a href="#">회원가입</a>
+            </div>
             
-                     <% if(loginMember == null){ %>
-                <!-- case1. 로그인 전  -->
-                <div id="h4">
-                    <a href="#">환영합니다.</a>
-                </div>
-                <div id="h5">
-                    <a href="<%= contextPath %>/loginView.me">로그인</a>
-                </div>
-                <div id="h6">
-                    <a href="<%= contextPath %>/enrollForm.me">회원가입</a>
-                </div>
-                <!--
-                <script>
-                    function enrollPage(){
-                        // location.href = "<%= contextPath %>/views/member/memberEnrollForm.jsp"
-                        location.href = "<%= contextPath %>/enrollForm.me";
-                    }            
-                    
-                    function loginPage(){
-                        // location.href = "<%= contextPath %>/views/member/login.jsp"
-                        location.href = "<%= contextPath %>/loginForm.me";
-                    }
-                </script>
-                -->
-            <% }else { %>
-                <!-- case2. 로그인 후  -->
-                
-                <div id="h4">
-                    <a href="#"><%= loginMember.getUserName()%>님</a>
-                </div>
-                <div id="h5">
-                    <a href="<%= contextPath %>/myPage.me">마이페이지</a>
-                </div>
-                <div id="h6">
-                    <a href="<%= contextPath %>/logout.me">로그아웃</a>
-                </div>
-                
-            <% } %> 
+            <!-- 
+            <div id="h4">
+                <a href="#" style="font-weight: bolder; text-align: left; line-height: 1.2;">차은우 님</a>
+            </div>
+            <div id="h5">
+                <a href="#">마이페이지</a>
+            </div>
+            <div id="h6">
+                <a href="#">로그아웃</a>
+            </div>
+        -->
             
             
            
@@ -301,7 +272,7 @@
         <div id="navigator">
              <ul id="navi">
                     <li>
-                        <a href="<%= contextPath%>/views/board/boardListView2.jsp">자유게시판</a>
+                        <a href="<%= contextPath %>/list.bo?cpage=1&test=10">자유게시판</a>
                     </li>
                     <li>
                         <a href="#">질문게시판</a>
@@ -430,14 +401,14 @@
                     <img src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAxNzA4MjVfMTYy%2FMDAxNTAzNjU1MDIxMzAw.g5oPjCdudOh5UUZzXZEhg3rNvFzOZLghtGz6i0wmSqIg.yBmrtGSduhGVZlF_q2nEdg0p9198raV5V3FYT1l_Jy8g.JPEG.caprisun_zin%2F%25B6%25F3%25C7%25AA%25B8%25B6_%25285%2529.jpg&type=a340" id="add2">
                 </div>
                 <div id="con3_3" style="font-size: 18px; font-weight: bolder;"">
-                    <p id="writers">Top Writers</p>
+                    Top Writers
                 </div>
             </div>
            
         </div>
     
         <div id="topbtn">
-            <a style="display:scroll; position:fixed; bottom:10px; right:5px;" href="#" title="top">
+            <a style="display:scroll;position:fixed;bottom:10px;right:5px;" href="#" title="top">
                 <img src="https://cdn-icons-png.flaticon.com/128/6469/6469473.png" id="top">
             </a> 
         </div>

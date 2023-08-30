@@ -1,25 +1,29 @@
-package board.controller;
+package member.controller;
 
 import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import board.model.service.BoardService;
+import member.model.service.MemberService;
+import member.model.vo.Member;
 
 /**
- * Servlet implementation class BoardLikeController
+ * Servlet implementation class LoginController
  */
-@WebServlet("/like.bo")
-public class BoardLikeController extends HttpServlet {
+@WebServlet("/login.me")
+public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardLikeController() {
+    public LoginController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -28,20 +32,20 @@ public class BoardLikeController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String userId = request.getParameter("userId");
+		String userPwd = request.getParameter("userPwd"); 
 		
-		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
-		int userNo = Integer.parseInt(request.getParameter("userNo"));
-//		System.out.println("bno : " + boardNo +  "uno : " + userNo);
+		Member loginMember = new MemberService().loginMember(userId, userPwd);
 		
-		int result = new BoardService().insertLike(userNo, boardNo);
-		
-		if(result > 0) {
-			response.getWriter().print("Y");
+		if(loginMember == null) {
+			request.setAttribute("errorMsg", "로그인 실패!");
+			RequestDispatcher view = request.getRequestDispatcher("views/common/errorPage.jsp");
+			view.forward(request, response);
 		}else {
-			response.getWriter().print("N");
+			HttpSession session = request.getSession();
+			session.setAttribute("loginMember", loginMember);
+			response.sendRedirect(request.getContextPath());
 		}
-		
-		
 	}
 
 	/**

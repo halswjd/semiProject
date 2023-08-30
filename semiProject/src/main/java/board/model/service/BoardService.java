@@ -35,6 +35,17 @@ public class BoardService {
 		return list;
 	}
 	
+	public ArrayList<Board> ajaxBoardList(){
+		
+		Connection conn = getConnection();
+		
+		ArrayList<Board> list = new BoardDao().ajaxBoardList(conn);
+		
+		close(conn);
+		
+		return list;
+	}
+	
 	public ArrayList<Category> selectCategoryList(){
 		
 		Connection conn = getConnection();
@@ -83,6 +94,96 @@ public class BoardService {
 		close(conn);
 		
 		return b;
+		
+	}
+	
+	public int insertLike(int userNo, int boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().insertLike(conn, userNo, boardNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		close(conn);
+		
+		return result;
+	}
+	
+	public int deleteLike(int userNo, int boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().deleteLike(conn, userNo, boardNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result;
+	}
+	
+	public int checkLike(int userNo, int boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int count = new BoardDao().checkLike(conn, userNo, boardNo);
+		
+		close(conn);
+		
+		return count;
+		
+	}
+	
+	public int insertBook(int userNo, int boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().insertBook(conn, userNo, boardNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result;
+	}
+	
+	public int deleteBook(int userNo, int boardNo) {
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().deleteBook(conn, userNo, boardNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result;
+	}
+	
+	public int checkBook(int userNo, int boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int count = new BoardDao().checkBook(conn, userNo, boardNo);
+		
+		close(conn);
+		
+		return count;
 		
 	}
 }

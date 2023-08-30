@@ -1,7 +1,9 @@
+<%@page import="member.model.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
 	String contextPath = request.getContextPath();
+	Member loginMember = (Member)session.getAttribute("loginMember");
 %>
 
 <!DOCTYPE html>
@@ -118,7 +120,7 @@
     <div class="mb_outer">
         <div class="mb_menu-area">
             <div id="mb_logo" onclick="main();">
-                <img src="resources/image/logo.png" alt="로고">
+                <img src="/semi/resources/image/logo.png" alt="로고">
             </div>
             <div id="mb_nav">
                 <ul id="mb_navi">
@@ -132,6 +134,7 @@
             </div>
         </div>
         <script>
+ 			/*       
             $(function(){
                 // 해당 페이지 스타일부여하는 함수
                 const a = location.href;
@@ -147,20 +150,21 @@
                 }
                 
             })
-            
+            */
             function main(){
             	location.href = "<%= contextPath %>/main.jsp";
             }
         </script>
         
         <div class="mb_login-area">
+	       <% if(loginMember != null){ %>
            <!-- 로그인 후 -->
             <div id="mb_user_1">
 
                 <table align="center">
                     <tr height="75">
                         <th width="70"><img width="65" height="65" src="https://cdn-icons-png.flaticon.com/128/3985/3985429.png" alt=""></th>
-                        <td width="150" style="font-size: 20px; padding-left: 8px;"><b>차은우 님</b></td>
+                        <td width="150" style="font-size: 20px; padding-left: 8px;"><b><%= loginMember.getUserName() %> 님</b></td>
                     </tr>
                 </table>
 
@@ -174,29 +178,28 @@
                     </tr>
                 </table>
             </div>
-
-            <!-- 로그인전
+			<%} else{ %>
+            <!-- 로그인전 -->
             <div id="mb_user_1">
 
                 <table align="center">
                     <tr height="75">
-                        <th width="70"><img width="60" height="60" src="resources/image/user.png" alt=""></th>
+                        <th width="70"><img width="60" height="60" src="https://cdn-icons-png.flaticon.com/128/3985/3985429.png" alt=""></th>
                         <td width="100" style="font-size: 17px"><b>로그인하세요</b></td>
                     </tr>
                 </table>
 
-
+	
             </div>
             <div id="mb_user_2">
                 <table align="center">
                     <tr height="75" align="center">
-                        <td width="50"><a href="">로그인</a></td>
-                        <td width="70"><a href="">회원가입</a></td>
+                        <td width="50"><a href="<%= contextPath %>/loginView.me">로그인</a></td>
+                        <td width="70"><a href="<%= contextPath %>/enrollForm.me">회원가입</a></td>
                     </tr>
                 </table>
             </div>
-            -->
-
+			<%} %>
         </div>
     </div>
 </body>

@@ -165,70 +165,13 @@
                     <select name="subject">
                         
                     </select>
-                    <select name="test" id="test">
-                    	<option value="">보기선택</option>
+                    <select name="test" id="boardLimit">
                         <option value="10">10개씩</option>
                         <option value="15">15개씩</option>
                         <option value="20">20개씩</option>
                     </select>
                 </div>
-                <script>
-                	// 보기선택 함수
-                	/*
-                	$("select[name=test]").change(function(){
-                		console.log($(this).val());
-                		location.href = "<%= contextPath%>/list.bo?cpage=1&test=" + $(this).val();
-                	})
-                	*/
-                	
-                	// 카테고리 불러오는 함수
-                	$(function(){
-                		$.ajax({
-                			url:"list.category",
-                			success:function(list){
-                				// console.log(list);
-                				let result = "<option>말머리 선택</option>";
-                				for(let i=0; i<list.length; i++){
-                					result += "<option value=" + list[i].categoryNo + ">"
-                							+ list[i].categoryName + "</option>"
-                				}
-                				
-                				$("select[name=subject]").html(result);
-                				
-                			}, 
-                			error:function(){
-                				console.log("실패");
-                			}
-                		})
-                	})
-
-                	// 말머리선택 함수
-                    $("select[name=subject]").change(function(){
-                        console.log($(this).val());
-                        location.href = "<%= contextPath%>/list.bo?cpage=1&test=10&categoryNo=" + $(this).val();
-                        
-                        
-                        /*
-                        $.ajax({
-                            url:"list.bo",
-                            data:{categoryNo:$(this).val(),
-                            test:"10",
-                            cpage:"1"
-                            },
-                            success:function(){
-                                console.log("성공");
-                            },
-                            error:function(){
-                                console.log("실패");
-                            }
-                            
-                        })
-                     
-                        */
-                    })
-                    
-                   
-                </script>
+                
     
                 <div id="search">
                     <form action="">
@@ -248,7 +191,13 @@
                         </div>
                     </form>
                 </div>
-                <button type="button" class="btn btn-secondary">글쓰기</button>
+                
+                <% if(loginMember == null){%>
+                    <button type="button" class="btn btn-secondary" onclick="loginAlert();">글쓰기</button>
+                <%}else{%>
+                	<button type="button" class="btn btn-secondary">글쓰기</button>
+                <%} %>
+                
             </div>
             <!-- db 가져와서 아래 div 부분 계속 생성되게 -->
             <div class="list">
@@ -333,6 +282,14 @@
         </div>
         
     </div>
+    <script>
+        function loginAlert(){
+            alert('로그인 후 이용가능합니다 ~!');
+        }
+        
+        
+        
+    </script>
 	
 
 </body>

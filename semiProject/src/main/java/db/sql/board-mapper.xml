@@ -109,4 +109,69 @@
 	  JOIN CATEGORY USING (CATEGORY_NO)
 	 WHERE BOARD_NO = 'B' || ?
 </entry>
+<entry key="insertLike">
+	INSERT INTO LIKES
+	VALUES 
+	(
+	  ?
+	, 'B' || ?
+	)  
+</entry>
+<entry key="deleteLike">
+	DELETE LIKES
+	 WHERE USER_NO = ?
+	   AND BOARD_NO = 'B' || ?
+</entry>
+<entry key="checkLike">
+	SELECT BOARD_NO
+	FROM LIKES
+	WHERE USER_NO = ?
+	AND BOARD_NO = 'B' || ?
+</entry>
+<entry key="insertBook">
+	INSERT INTO BOOKMARK
+	VALUES
+	(
+	  ?
+	, 'B' || ?
+	)
+</entry>
+<entry key="deleteBook">
+	DELETE BOOKMARK
+	WHERE USER_NO = ?
+	  AND BOARD_NO = 'B'|| ?
+</entry>
+<entry key="checkBook">
+	SELECT BOARD_NO
+	FROM BOOKMARK
+	WHERE USER_NO = ?
+	AND BOARD_NO = 'B' || ?
+</entry>
+<entry key="ajaxBoardList">
+	SELECT
+	        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
+	      , CATEGORY_NAME
+	      , BOARD_TITLE
+	      , NICKNAME
+	      , COUNT
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD') AS "CREATE_DATE"
+	      , (
+	          SELECT COUNT(*)
+	            FROM REPLY
+	           WHERE REF_BNO = B.BOARD_NO
+	             AND STATUS = 'Y'
+	       ) AS "REPLY_COUNT"
+	       , (
+	         SELECT COUNT(*)
+	           FROM LIKES L
+	         WHERE L.BOARD_NO = B.BOARD_NO
+	       ) AS "LIKE_COUNT"
+	  FROM BOARD B
+	  JOIN CATEGORY USING (CATEGORY_NO)
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE BOARD_TYPE = 1
+	   AND B.STATUS = 'Y'
+	 ORDER
+	    BY BOARD_NO DESC
+</entry>
 </properties>
