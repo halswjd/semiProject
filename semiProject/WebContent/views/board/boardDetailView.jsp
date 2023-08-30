@@ -66,16 +66,16 @@
           
         }
         
-        #comment-area1{
+        .comment-area1{
             border: none;
             background-color: rgb(244, 244, 244);
             padding: 10px;
             margin-top: 10px;
         }
-        #comment-area1>*{margin: 5px;}
-        #cmt_id{font-size: 15px; font-weight: bold;}
-        #cmt_txt{margin-top: 10px; margin-bottom: 10px; font-size: 14px;}
-        #cmt_etc{font-size: 12px; color: gray;}
+        .comment-area1>*{margin: 5px;}
+        .cmt_id{font-size: 15px; font-weight: bold;}
+        .cmt_txt{margin-top: 10px; margin-bottom: 10px; font-size: 14px;}
+        .cmt_etc{font-size: 12px; color: gray;}
         #comment-area2{
             border: 1px solid gray;
             border-radius: 5px;
@@ -153,8 +153,9 @@
             <%} %>
             </div>
             
-            
-            
+            <%if(loginMember == null){ %>
+            <div></div>
+            <%} else{%>
             <div id="bar" align="right">
                 <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
                 <button id="like1" onclick="insertLike();">좋아요 🤍</button>
@@ -162,6 +163,7 @@
                 <button id="bookmark1" onclick="insertBook();"><img src="resources/image/bookmark_blank.png" width="25" height="25"></button>
                 <button id="bookmark2" onclick="deleteBook();" style="display: none;"><img src="resources/image/bookmark.png" width="25" height="25"></button>
             </div>
+            <%} %>
             <div id="comment">
                 <div id="comment-area2">
                     <form action="">
@@ -173,20 +175,27 @@
                     </form>
                 </div>
                 <b>댓글 <%=b.getReplyCount() %></b>
-                <div id="comment-area1">
-                    <div id="cmt_id">김뫄뫄</div>
-                    <div id="cmt_txt">너무 피곤해유</div>
-                    <div id="cmt_etc">
-                        <span>7시간전</span>
-                        <span>좋아요</span>
+                <div id="comment-list">
+                    <div class="comment-area1">
+                        <div class="cmt_id">김뫄뫄</div>
+                        <div class="cmt_txt">너무 피곤해유</div>
+                        <div class="cmt_etc">
+                            <span>7시간전</span>
+                            <span>좋아요</span>
+                        </div>
                     </div>
+                    
                 </div>
+                
                 <!-- 비회원은 disabled -->
             </div>
         </div>
     </div>
     <input name="bno" type="hidden" value="<%= b.getBoardNo()%>">
-    <input name="userNo" type="hidden" value="3">
+    <%if(loginMember != null){ %>
+    <input name="userNo" type="hidden" value="<%= loginMember.getUserNo()%>">
+    <%} %>
+    
 
     <script>
  		// ----- 좋아요 관련 -----------
@@ -230,28 +239,7 @@
            })
         }
         
-        $(function(){
-            let bno = $("input[name=bno]").val();
-            let userNo = $("input[name=userNo]").val();
-
-            $.ajax({
-                url:"likeCheck.bo",
-                data:{boardNo:bno, userNo:userNo},
-                success:function(result){
-                    console.log("성공");
-                    if(result == 'Y'){
-                    	$("#like2").css("display", "");
-                        $("#like1").css("display", "none");
-                    }else{
-                    	$("#like2").css("display", "none");
-                        $("#like1").css("display", "");                    	
-                    }
-                },
-                error:function(result){
-                    console.log("실패");
-                }
-            })
-        })
+        
 	
 		// ----- 북마크 관련 -----------
 
@@ -295,28 +283,75 @@
            })
         }
         
+        // 북마크, 좋아요 체크 함수
         $(function(){
             let bno = $("input[name=bno]").val();
             let userNo = $("input[name=userNo]").val();
-
+	
+            if(userNo != null){
+            	
+	            $.ajax({
+	                url:"likeCheck.bo",
+	                data:{boardNo:bno, userNo:userNo},
+	                success:function(result){
+	                    console.log("성공");
+	                    if(result == 'Y'){
+	                    	$("#like2").css("display", "");
+	                        $("#like1").css("display", "none");
+	                    }else{
+	                    	$("#like2").css("display", "none");
+	                        $("#like1").css("display", "");                    	
+	                    }
+	                },
+	                error:function(result){
+	                    console.log("실패");
+	                }
+	            })
+	            
+	            $.ajax({
+	                url:"bookCheck.bo",
+	                data:{boardNo:bno, userNo:userNo},
+	                success:function(result){
+	                    console.log("성공");
+	                    if(result == 'Y'){
+	                    	$("#bookmark2").css("display", "");
+	                        $("#bookmark1").css("display", "none");
+	                    }else{
+	                    	$("#bookmark2").css("display", "none");
+	                        $("#bookmark1").css("display", "");                    	
+	                    }
+	                },
+	                error:function(result){
+	                    console.log("실패");
+	                }
+	            })
+	            
+            }
+            
+            let charHtml = "";
+            
             $.ajax({
-                url:"bookCheck.bo",
-                data:{boardNo:bno, userNo:userNo},
-                success:function(result){
-                    console.log("성공");
-                    if(result == 'Y'){
-                    	$("#bookmark2").css("display", "");
-                        $("#bookmark1").css("display", "none");
-                    }else{
-                    	$("#bookmark2").css("display", "none");
-                        $("#bookmark1").css("display", "");                    	
-                    }
-                },
-                error:function(result){
-                    console.log("실패");
-                }
+            	url:"replyList.bo",
+            	data:{boardNo:bno},
+            	success:function(list){
+            		for(let i=0; i<list.length; i++){
+	            		charHtml += "<div class='comment-area1'>"
+	            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
+	            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>"
+	            				  + "<div class='cmt_etc'><span>" + list[i].createDate + "</span>"
+	            				  + "</div></div>"; 
+            		}
+            		
+            		$("#comment-list").html(charHtml);
+            		
+            	},
+            	error:function(){
+            		console.log("댓글 불러오기 실패");
+            	}
             })
+            
         })
+        
 
 
     </script>

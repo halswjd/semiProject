@@ -167,12 +167,14 @@ button>img {
 	text-align: center;
 	line-height: 1.8;
 }
+
 #paging-area {
     text-align: center;
     display: inline-block;
     border: 1px solid #ccc;
     border-right: 0;
 	padding-left :0;
+	
 }
 #paging-area li {
     text-align: center;
@@ -190,6 +192,7 @@ button>img {
     box-sizing: border-box;
 	text-decoration-line:none;
 }
+
 </style>
 </head>
 <body>
@@ -224,7 +227,7 @@ button>img {
 							<input type="text" placeholder=" 검색어를 입력하세요">
 							<!-- <button type="submit">검색</button> -->
 							<button type="submit" class="img-button">
-								<img src="/semi/resources/image/search.png" alt="">
+								<img src="<%= contextPath %>/resources/image/search.png" alt="">
 							</button>
 						</div>
 					</form>
@@ -233,12 +236,11 @@ button>img {
 				<%
 				if (loginMember == null) {
 				%>
-				<button type="button" class="btn btn-secondary"
-					onclick="loginAlert();">글쓰기</button>
+					<button type="button" class="btn btn-secondary" onclick="loginAlert();">글쓰기</button>
 				<%
 				} else {
 				%>
-				<button type="button" class="btn btn-secondary">글쓰기</button>
+					<button type="button" class="btn btn-secondary">글쓰기</button>
 				<%
 				}
 				%>
@@ -273,9 +275,11 @@ button>img {
 				</table>
 			</div>
 
+			
 			<ul id="paging-area">
 
 			</ul>
+			
 
 
 
@@ -296,7 +300,7 @@ button>img {
     			url:"list.category",
     			success:function(list){
     				// console.log(list);
-    				let result = "<option>말머리 선택</option>";
+    				let result = "<option value='0'>말머리 선택</option>";
     				for(let i=0; i<list.length; i++){
     					result += "<option value=" + list[i].categoryNo + ">"
     							+ list[i].categoryName + "</option>"
@@ -317,9 +321,8 @@ button>img {
 		let globalCurrentPage = 1; // 현재 페이지
 		let dataList; // 데이터 리스트
 
-
-		let categoryDataList;
-		let categoryListCount;
+		
+	
 		
 
 		$(function() {
@@ -351,25 +354,18 @@ button>img {
 
 		// 말머리 선택 리스트
 		$("#subject").on("change",function(){
-			console.log($(this).val());
-
-			// boardLimit 설정
-			boardLimit = $("#boardLimit").val();
-			console.log(boardLimit);
 
 			$.ajax({
 				url:"categoryList.bo",
 				data:{categoryNo:$(this).val()},
 				success:function(list){
-					console.log("성공");
-					console.log("말머리 length : " + list.length);
-					categoryListCount = list.length;
-					categoryDataList = list;
+					listCount = list.length;
+					dataList = list;
 
 					// 글 목록 불러오기 호출
 					displayData(1, boardLimit);
 					// 페이징 표시 호출
-					paging(categoryListCount, boardLimit, pageLimit, 1);
+					paging(listCount, boardLimit, pageLimit, 1);
 					
 				},
 				error:function(){
@@ -392,17 +388,23 @@ button>img {
 
 				charHtml += '<tr align="center">'
 						+ '<td width="80" style="color: gray;">'+ dataList[i].boardNo + '</td>' 
-						+ '<td width="60">[' + dataList[i].category + ']</td>'
-						+ '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '</td>' 
-						+ '<td>'+ dataList[i].boardWriter + '</td>' 
-						+ '<td>'+ dataList[i].createDate + '</td>'
-						+ '<td>'+ dataList[i].likeCount + '</td>' 
-						+ '<td>'+ dataList[i].count + '</td>' + '</tr>';
-
+						+ '<td width="60">[' + dataList[i].category + ']</td>';
+						
+				if(dataList[i].replyCount == 0){
+					charHtml += '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '</td>' 
+				}else{
+					charHtml += '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '<span>' + dataList[i].replyCount + '</span></td>' 
+				}
+					charHtml += '<td>'+ dataList[i].boardWriter + '</td>' 
+							+ '<td>'+ dataList[i].createDate + '</td>'
+							+ '<td>'+ dataList[i].likeCount + '</td>' 
+							+ '<td>'+ dataList[i].count + '</td>' + '</tr>';
 			}
 
 			$(".list-area").children("tbody").html(charHtml);
 		}
+
+		
 		
 		function paging(listCount, boardLimit, pageLimit, currentPage){
 			

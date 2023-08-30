@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import board.model.vo.Board;
 import board.model.vo.Category;
+import board.model.vo.Reply;
 import common.model.vo.PageInfo;
 
 import static common.JDBCTemplate.*;
@@ -450,6 +451,40 @@ public class BoardDao {
 		
 		return list;
 		
+	}
+	
+	public ArrayList<Reply> selectReplyList(Connection conn, int boardNo){
+		
+		ArrayList<Reply> list = new ArrayList<Reply>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("selectReplyList");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, boardNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				
+				list.add(new Reply(rset.getInt("reply_no"),
+								   rset.getString("reply_content"),
+								   rset.getString("create_date"),
+								   rset.getString("nickname")
+								   ));
+				
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally{
+			close(rset);
+			close(pstmt);
+		}
+		
+		return list;
 		
 		
 	}

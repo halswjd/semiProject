@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import board.model.dao.BoardDao;
 import board.model.vo.Board;
 import board.model.vo.Category;
+import board.model.vo.Reply;
 import common.model.vo.PageInfo;
 
 import static common.JDBCTemplate.*;
@@ -192,6 +193,17 @@ public class BoardService {
 		Connection conn = getConnection();
 		
 		ArrayList<Board> list = new BoardDao().categoryBoardList(conn, categoryNo);
+		
+		close(conn);
+		
+		return list;
+	}
+	
+	public ArrayList<Reply> selectReplyList(int boardNo){
+		
+		Connection conn = getConnection();
+		
+		ArrayList<Reply> list = new BoardDao().selectReplyList(conn, boardNo);
 		
 		close(conn);
 		

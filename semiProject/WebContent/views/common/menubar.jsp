@@ -174,7 +174,7 @@
                 <table align="center">
                     <tr height="75" align="center">
                         <td width="100"><a href="">마이페이지</a></td>
-                        <td width="100"><a href="">로그아웃</a></td>
+                        <td width="100"><a href="<%= contextPath %>/logout.me">로그아웃</a></td>
                     </tr>
                 </table>
             </div>

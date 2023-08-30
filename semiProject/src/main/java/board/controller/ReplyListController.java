@@ -12,19 +12,19 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import board.model.service.BoardService;
-import board.model.vo.Board;
+import board.model.vo.Reply;
 
 /**
- * Servlet implementation class BoardCategoryListController
+ * Servlet implementation class ReplyListController
  */
-@WebServlet("/categoryList.bo")
-public class BoardCategoryListController extends HttpServlet {
+@WebServlet("/replyList.bo")
+public class ReplyListController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardCategoryListController() {
+    public ReplyListController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -34,20 +34,15 @@ public class BoardCategoryListController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		int categoryNo = Integer.parseInt(request.getParameter("categoryNo"));
-		
-		if(categoryNo == 0) {
-			ArrayList<Board> list = new BoardService().ajaxBoardList();
-			response.setContentType("application/json; charset=utf-8");
-			new Gson().toJson(list, response.getWriter());
-		}else {
-			ArrayList<Board> list = new BoardService().categoryBoardList(categoryNo);
-			response.setContentType("application/json; charset=utf-8");
-			new Gson().toJson(list, response.getWriter());
-		}
+		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
 		
 		
+		ArrayList<Reply> list = new BoardService().selectReplyList(boardNo);
 		
+		
+		response.setContentType("application/json; charset=utf-8");
+		
+		new Gson().toJson(list, response.getWriter());
 	}
 
 	/**
