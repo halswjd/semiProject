@@ -4,7 +4,7 @@
     
 <%
 	Board b = (Board)request.getAttribute("b");
-	// 글번호, 글제목, 글내용, 해시태그, 조회수, 닉네임, 말머리, 작성일자, 댓글수
+	// 글번호, 글제목, 글내용, 해시태그, 조회수, 닉네임, 말머리, 작성일자, 댓글수, 작성자유저번호
 	
 	String[] hashtagList = new String[10];
 	
@@ -18,7 +18,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>자유게시판 - MOUNTAINEER</title>
  <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
@@ -122,6 +122,13 @@
         .modal-body>form>p{
             margin: 10px;
         }
+
+        .deleteReply-btn{
+            margin: 0;
+            color: tomato;
+            margin-top: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -144,9 +151,9 @@
             <div id="hashtag">
             <%if(hashtagList[0] != null){ %>
                 <% for(int i=1; i<hashtagList.length; i++){ %>
-                <div class="hashtag">
-                    # <%= hashtagList[i] %>
-                </div>
+                    <div class="hashtag">
+                        # <%= hashtagList[i] %>
+                    </div>
                 <%} %>
             <%}else{ %>
             	<div></div>
@@ -154,8 +161,10 @@
             </div>
             
             <%if(loginMember == null){ %>
-            <div></div>
-            <%} else{%>
+            <div id="bar" align="right"></div>
+            <%}else if(loginMember.getUserNo() == b.getUserNo()){%>
+            <div id="bar" align="right"><button style="color:tomato;" onclick="deleteBoard();">글 삭제</button></div>
+            <%}else{ %>
             <div id="bar" align="right">
                 <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
                 <button id="like1" onclick="insertLike();">좋아요 🤍</button>
@@ -164,30 +173,29 @@
                 <button id="bookmark2" onclick="deleteBook();" style="display: none;"><img src="resources/image/bookmark.png" width="25" height="25"></button>
             </div>
             <%} %>
+            
             <div id="comment">
+                <b>댓글 <%=b.getReplyCount() %></b>
                 <div id="comment-area2">
-                    <form action="">
-                        <textarea name="comment" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요"></textarea>
+                    <form action="<%= contextPath %>/insertReply.bo" method="post">
+                    	<input name="bno" type="hidden" value="<%= b.getBoardNo()%>">
+                        <textarea name="comment" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요" required></textarea>
                         <div id="cmt_btn" align="right">
                             <button type="reset">취소</button>
+                            <%if(loginMember != null){ %>
+                            <input name="userNo" type="hidden" value="<%= loginMember.getUserNo()%>">
                             <button type="submit">등록</button>
+                            <%}else{ %>
+                            <button type="submit" disabled>등록</button>
+                            <%} %>
                         </div>
                     </form>
                 </div>
-                <b>댓글 <%=b.getReplyCount() %></b>
                 <div id="comment-list">
-                    <div class="comment-area1">
-                        <div class="cmt_id">김뫄뫄</div>
-                        <div class="cmt_txt">너무 피곤해유</div>
-                        <div class="cmt_etc">
-                            <span>7시간전</span>
-                            <span>좋아요</span>
-                        </div>
-                    </div>
+                    
                     
                 </div>
                 
-                <!-- 비회원은 disabled -->
             </div>
         </div>
     </div>
@@ -203,40 +211,46 @@
         	let bno = $("input[name=bno]").val();
             let userNo = $("input[name=userNo]").val();
             
-           $.ajax({
-            url:"like.bo",
-            data:{boardNo:bno, userNo:userNo},
-            success:function(result){
-                console.log("성공")
-                if(result == 'Y'){
-                	$("#like1").css("display", "none");
-                    $("#like2").css("display", "");
-                }
-            },
-            error:function(){
-                console.log("실패")
+            if(userNo != null){
+	           $.ajax({
+	            url:"like.bo",
+	            data:{boardNo:bno, userNo:userNo},
+	            success:function(result){
+	                console.log("성공")
+	                if(result == 'Y'){
+	                	$("#like1").css("display", "none");
+	                    $("#like2").css("display", "");
+	                }
+	            },
+	            error:function(){
+	                console.log("실패")
+	            }
+	           })
+            	
             }
-           })
         }
         
         function deleteLike(){
         	let bno = $("input[name=bno]").val();
             let userNo = $("input[name=userNo]").val();
             
-           $.ajax({
-            url:"likeDelete.bo",
-            data:{boardNo:bno, userNo:userNo},
-            success:function(result){
-                console.log("성공")
-                if(result == 'Y'){
-                	$("#like2").css("display", "none");
-                    $("#like1").css("display", "");
-                }
-            },
-            error:function(){
-                console.log("실패")
+            if(userNo != null){
+            	 $.ajax({
+                     url:"likeDelete.bo",
+                     data:{boardNo:bno, userNo:userNo},
+                     success:function(result){
+                         console.log("성공")
+                         if(result == 'Y'){
+                         	$("#like2").css("display", "none");
+                             $("#like1").css("display", "");
+                         }
+                     },
+                     error:function(){
+                         console.log("실패")
+                     }
+                    })
             }
-           })
+          
         }
         
         
@@ -247,47 +261,52 @@
             let bno = $("input[name=bno]").val();
             let userNo = $("input[name=userNo]").val();
             
-           $.ajax({
-            url:"book.bo",
-            data:{boardNo:bno, userNo:userNo},
-            success:function(result){
-                console.log("성공")
-                if(result == 'Y'){
-                	$("#bookmark1").css("display", "none");
-                    $("#bookmark2").css("display", "");
-                }
-            },
-            error:function(){
-                console.log("실패")
+            if(userNo != null){
+	           $.ajax({
+	            url:"book.bo",
+	            data:{boardNo:bno, userNo:userNo},
+	            success:function(result){
+	                console.log("성공")
+	                if(result == 'Y'){
+	                	$("#bookmark1").css("display", "none");
+	                    $("#bookmark2").css("display", "");
+	                }
+	            },
+	            error:function(){
+	                console.log("실패")
+	            }
+	           })
+            	
             }
-           })
         }
 
         function deleteBook(){
             let bno = $("input[name=bno]").val();
             let userNo = $("input[name=userNo]").val();
             
-           $.ajax({
-            url:"deleteBook.bo",
-            data:{boardNo:bno, userNo:userNo},
-            success:function(result){
-                console.log("성공")
-                if(result == 'Y'){
-                	$("#bookmark1").css("display", "");
-                    $("#bookmark2").css("display", "none");
-                }
-            },
-            error:function(){
-                console.log("실패")
+            if(userNo != null){
+	           $.ajax({
+	            url:"deleteBook.bo",
+	            data:{boardNo:bno, userNo:userNo},
+	            success:function(result){
+	                console.log("성공")
+	                if(result == 'Y'){
+	                	$("#bookmark1").css("display", "");
+	                    $("#bookmark2").css("display", "none");
+	                }
+	            },
+	            error:function(){
+	                console.log("실패")
+	            }
+	           })
+            	
             }
-           })
         }
         
         // 북마크, 좋아요 체크 함수
         $(function(){
+        	let userNo = $("input[name=userNo]").val();
             let bno = $("input[name=bno]").val();
-            let userNo = $("input[name=userNo]").val();
-	
             if(userNo != null){
             	
 	            $.ajax({
@@ -327,33 +346,64 @@
 	            })
 	            
             }
-            
-            let charHtml = "";
-            
-            $.ajax({
-            	url:"replyList.bo",
-            	data:{boardNo:bno},
-            	success:function(list){
-            		for(let i=0; i<list.length; i++){
-	            		charHtml += "<div class='comment-area1'>"
-	            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
-	            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>"
-	            				  + "<div class='cmt_etc'><span>" + list[i].createDate + "</span>"
-	            				  + "</div></div>"; 
-            		}
-            		
-            		$("#comment-list").html(charHtml);
-            		
-            	},
-            	error:function(){
-            		console.log("댓글 불러오기 실패");
-            	}
-            })
+	            // 댓글 리스트
+                let charHtml = "";
+	            
+	            $.ajax({
+	            	url:"replyList.bo",
+	            	data:{boardNo:bno},
+	            	success:function(list){
+	            		console.log("댓글 메소드 탐");
+	            		for(let i=0; i<list.length; i++){
+		            		charHtml += "<div class='comment-area1'>"
+		            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
+		            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>"
+		            				  + "<div class='cmt_etc'>" + list[i].createDate;
+	            				  if(userNo == list[i].userNo){
+		            				  charHtml += "<p class='deleteReply-btn' onclick='deleteReply($(this));'>삭제</p>"
+		            				  		   + "<input type='hidden' value='" + list[i].replyNo + "'>"
+		            					 	   + "</div></div>"; 
+	            				  }else{
+	            					  charHtml += "</div></div>";
+	            				  }
+		            				  
+	            		}
+	            		
+	            		$("#comment-list").html(charHtml);
+	            		
+	            	},
+	            	error:function(){
+	            		console.log("댓글 불러오기 실패");
+	            	}
+	            	
+	            })
+	            
+
             
         })
         
-
-
+     	// 댓글 삭제 함수
+		function deleteReply(e){
+        	let bno = $("input[name=bno]").val();
+        	let replyNo = e.next().val();
+        	
+        	if(confirm("댓글을 삭제하시겠습니까?")){
+	           	location.href='<%= contextPath%>/deleteReply.bo?rno=' + replyNo + '&bno=' + bno;
+        	}
+     
+        }
+        
+        // 게시글 삭제 함수
+        function deleteBoard(){
+        	let bno = $("input[name=bno]").val();
+        	
+        	if(confirm("해당 게시글을 삭제하시겠습니까?")){
+	        	location.href = "<%= contextPath %>/delete.bo?bno=" + bno;
+        	}
+        	
+        }
+        
+        
     </script>
 
     <div class="modal" id="reportBoard">
@@ -368,35 +418,40 @@
       
             <!-- Modal body -->
             <div class="modal-body">
-              <form action="" method="post">
+              <form action="<%= contextPath %>/reportBoard.bo" method="post">
                 <p>작성자 : <%= b.getBoardWriter() %> </p>
                 <p>글 제목 : <%= b.getBoardTitle() %> </p>
+                
+                <input name="bno" type="hidden" value="B<%= b.getBoardNo() %>">
+                <input name="reportedUserNo" type="hidden" value="<%= b.getUserNo()%>">
+                <% if(loginMember != null){ %>
+                <input name="reportUserNo" type="hidden" value="<%= loginMember.getUserNo()%>">
+                <%} %>
                 <hr>
                 
-                    <input type="radio" id="r1" name="report">
+                    <input type="radio" id="r1" name="report" value="영리목적/홍보성">
                     <label for="r1">영리목적/홍보성</label><br>
-                    <input type="radio" id="r2" name="report">
+                    <input type="radio" id="r2" name="report" value="욕설/인신공격">
                     <label for="r2">욕설/인신공격</label> <br>
-                    <input type="radio" id="r3" name="report">
+                    <input type="radio" id="r3" name="report" value="도배">
                     <label for="r3">같은 내용 반복(도배)</label> <br>
-
-
-                    <input type="radio" id="r4" name="report">
+                    <input type="radio" id="r4" name="report" value="개인정보노출">
                     <label for="r4">개인정보노출</label> <br>
-                    <input type="radio" id="r4" name="report">
-                    <label for="r4">불법정보</label><br>
-                    <input type="radio" id="r4" name="report">
-                    <label for="r4">음란성/선정성</label> <br>
+                    <input type="radio" id="r5" name="report" value="불법정보">
+                    <label for="r5">불법정보</label><br>
+                    <input type="radio" id="r6" name="report" value="음란성/선정성">
+                    <label for="r6">음란성/선정성</label> <br>
         
-                <textarea name="" style="resize: none;" placeholder=" 신고 사유 설명이 필요하신 경우 작성해주세요." cols="50" rows="3" style="margin: 20px;"></textarea>
+                <textarea name="reportContent" style="resize: none;" placeholder=" 신고 사유 설명이 필요하신 경우 작성해주세요." cols="50" rows="3" style="margin: 20px;"></textarea>
                 <br><button type="submit" class="btn btn-secondary" id="rpt_btn" style="width: 100%; height: 40px; margin-top: 15px;">신고</button>
               </form>
             </div>
   
-            </div>
+         </div>
             
-          </div>
-      </div>
+        </div>
     </div>
+    
+    <%@ include file="../common/footerbar.jsp" %>
 </body>
 </html>

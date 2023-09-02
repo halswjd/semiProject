@@ -7,6 +7,7 @@ import board.model.dao.BoardDao;
 import board.model.vo.Board;
 import board.model.vo.Category;
 import board.model.vo.Reply;
+import board.model.vo.Report;
 import common.model.vo.PageInfo;
 
 import static common.JDBCTemplate.*;
@@ -208,5 +209,70 @@ public class BoardService {
 		close(conn);
 		
 		return list;
+	}
+	
+	public int deleteReply(int replyNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().deleteReply(conn, replyNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			close(conn);
+		}
+		
+		return result;
+		
+	}
+	
+	public int insertReply(int boardNo, int userNo, String comment) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().insertReply(conn, boardNo, userNo, comment);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		return result;
+		
+	}
+	
+	public int reportBoard(Report r) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().reportBoard(conn, r);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result;
+		
+	}
+	
+	public int deleteBoard(int boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().deleteBoard(conn, boardNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		return result;
 	}
 }

@@ -1,4 +1,4 @@
-package board.controller;
+package today.controller;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -7,20 +7,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import board.model.service.BoardService;
-import board.model.vo.Board;
-
 /**
- * Servlet implementation class BoardDetailViewController
+ * Servlet implementation class TogetherEnrollFormController
  */
-@WebServlet("/detail.bo")
-public class BoardDetailViewController extends HttpServlet {
+@WebServlet("/enrollFormView.tg")
+public class TogetherEnrollFormController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardDetailViewController() {
+    public TogetherEnrollFormController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,21 +27,7 @@ public class BoardDetailViewController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		int boardNo =  Integer.parseInt(request.getParameter("bno"));
-		
-		int result = new BoardService().increaseCount(boardNo);
-		
-		if(result > 0) { // 유효한게시글
-			
-			Board b = new BoardService().selectBoard(boardNo);
-			
-			
-			request.setAttribute("b", b);
-			
-			request.getRequestDispatcher("views/board/boardDetailView.jsp").forward(request, response);
-			
-		}
-		
+		request.getRequestDispatcher("views/today/togetherEnrollForm.jsp").forward(request, response);
 		
 	}
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="toincreaseCount">
+	UPDATE
+	       TODAY
+	   SET COUNT = COUNT + 1
+	 WHERE TODAY_NO = ?
+</entry>
+<entry key="selectList">
+	SELECT
+	        SUBSTR(TODAY_NO,2) "TODAY_NO"
+	      , TODAY_TITLE
+          , TODAY_NAME
+          , TODAY_TIME
+	      , NICKNAME
+	      , MEM_COUNT
+	      , LEV
+	      , TO_CHAR(TODAY_DATE, 'YY/MM/DD') AS "TODAY_DATE"
+	  FROM TODAY T
+	  JOIN MEMBER ON (TODAY_WRITER = USER_NO)
+	 WHERE TODAY_TYPE = 2
+	   AND T.STATUS = 'Y'
+	 ORDER
+	    BY TODAY_NO DESC
+</entry>
+<entry key="selectTogether">
+	SELECT
+	        TODAY_NO
+	      , TODAY_TITLE
+	      , TODAY_CONTENT
+	      , NICKNAME
+          , TODAY_NAME
+          , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') AS "CREATE_DATE"
+          , TODAY_VEHICLE
+          , TODAY_TIME
+          , TODAY_COURSE
+	      , MEM_COUNT
+	      , LEV
+	      , TO_CHAR(TODAY_DATE, 'YY/MM/DD') AS "TODAY_DATE"
+	      , USER_NO
+          , (
+	          SELECT COUNT(*)
+	            FROM REPLY
+	           WHERE REF_BNO = TODAY_NO
+	             AND STATUS = 'Y'
+	        ) AS "REPLY_COUNT"
+	  FROM TODAY T
+	  JOIN MEMBER ON (TODAY_WRITER = USER_NO)
+	   AND T.STATUS = 'Y'
+       AND TODAY_NO = ?
+	 ORDER
+	    BY TODAY_NO DESC
+</entry>
+<entry key="insertTogether">
+	INSERT INTO TODAY
+	(
+	  TODAY_NO
+	, TODAY_TITLE
+	, TODAY_CONTENT
+	, TODAY_NAME
+	, TODAY_DATE
+	, TODAY_TIME
+	, TODAY_COURSE
+	, TODAY_VEHICLE
+	, TODAY_WRITER
+	, LEV
+	, TODAY_TYPE
+	)
+	VALUES
+	(
+	  'T' || SEQ_TNO.NEXTVAL
+	, ?
+	, ?
+	, ?
+	, ?
+	, ?
+	, ?
+	, ?
+	, ?
+	, ?
+	, 2
+	)
+</entry>
+</properties>

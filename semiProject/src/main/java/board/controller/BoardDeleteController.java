@@ -8,19 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board.model.service.BoardService;
-import board.model.vo.Board;
 
 /**
- * Servlet implementation class BoardDetailViewController
+ * Servlet implementation class BoardDeleteController
  */
-@WebServlet("/detail.bo")
-public class BoardDetailViewController extends HttpServlet {
+@WebServlet("/delete.bo")
+public class BoardDeleteController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardDetailViewController() {
+    public BoardDeleteController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,22 +29,17 @@ public class BoardDetailViewController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		int boardNo =  Integer.parseInt(request.getParameter("bno"));
+		int boardNo = Integer.parseInt(request.getParameter("bno"));
 		
-		int result = new BoardService().increaseCount(boardNo);
+		int result = new BoardService().deleteBoard(boardNo);
 		
-		if(result > 0) { // 유효한게시글
-			
-			Board b = new BoardService().selectBoard(boardNo);
-			
-			
-			request.setAttribute("b", b);
-			
-			request.getRequestDispatcher("views/board/boardDetailView.jsp").forward(request, response);
-			
+		if(result > 0) {
+			request.getSession().setAttribute("alertMsg", "성공적으로 게시글을 삭제했습니다.");
+		}else {
+			request.getSession().setAttribute("alertMsg", "게시글 삭제에 실패했습니다.");
 		}
 		
-		
+		response.sendRedirect(request.getContextPath() + "/listView.bo");
 	}
 
 	/**

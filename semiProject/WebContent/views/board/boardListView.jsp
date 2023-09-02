@@ -10,18 +10,12 @@
 <meta charset="UTF-8">
 <title>MOUNTAINEER - 자유게시판</title>
 <!-- jQuery library -->
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<script
-	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<link
-	href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css"
-	rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css" rel="stylesheet">
 <style>
 .outer {
 	width: 1200px;
@@ -276,18 +270,20 @@ button>img {
 			</div>
 
 			
-			<ul id="paging-area">
+			<div align="center">
+				
+				<ul id="paging-area" align="center">
+		
+				</ul>
 
-			</ul>
+			</div>
 			
-
-
-
-
-
-
+			
+			
+			
+			
 		</div>
-
+		
 	</div>
 	<script>
 		function loginAlert() {
@@ -315,22 +311,21 @@ button>img {
     		})
     	})
 
+		
 		let listCount; // 총 게시글 수
 		let boardLimit; // 한 페이지내에 보여질 게시글 최대 개수
 		let pageLimit = 5; // 페이징 최대개수
 		let globalCurrentPage = 1; // 현재 페이지
 		let dataList; // 데이터 리스트
 
-		
-	
-		
 
 		$(function() {
 
 			// boardLimit 설정
 			boardLimit = $("#boardLimit").val();
 			console.log(boardLimit);
-
+	
+			// list 불러오기
 			$.ajax({
 				url : "list.bo",
 				success : function(list) {
@@ -384,6 +379,15 @@ button>img {
 			let start = (currentPage - 1) * boardLimit;
 			let end = (currentPage - 1) * boardLimit + boardLimit;
 
+			// 오늘날짜
+			let today = new Date();
+			let year = today.getFullYear();
+			let month = ('0' + (today.getMonth() + 1)).slice(-2);
+			let day = ('0' + today.getDate()).slice(-2);			
+			let dateString = year + '/' + month  + '/' + day;
+			
+			console.log("오늘날짜" + dateString);
+			
 			for (let i = start; i < end && i<listCount; i++) {
 
 				charHtml += '<tr align="center">'
@@ -395,10 +399,14 @@ button>img {
 				}else{
 					charHtml += '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '<span>' + dataList[i].replyCount + '</span></td>' 
 				}
-					charHtml += '<td>'+ dataList[i].boardWriter + '</td>' 
-							+ '<td>'+ dataList[i].createDate + '</td>'
-							+ '<td>'+ dataList[i].likeCount + '</td>' 
-							+ '<td>'+ dataList[i].count + '</td>' + '</tr>';
+					charHtml += '<td>'+ dataList[i].boardWriter + '</td>' ;
+				if('20' + dataList[i].createDate == dateString){
+					charHtml += '<td>오늘</td>';					
+				}else{
+					charHtml += '<td>'+ dataList[i].createDate + '</td>';
+				}
+					charHtml += '<td>'+ dataList[i].likeCount + '</td>' 
+							 + '<td>'+ dataList[i].count + '</td>' + '</tr>';
 			}
 
 			$(".list-area").children("tbody").html(charHtml);
@@ -473,6 +481,7 @@ button>img {
 			});
 			
 		}
+		
 		$("#boardLimit").change(function(){
 			boardLimit = $("#boardLimit").val();
 			
@@ -485,11 +494,9 @@ button>img {
     		location.href="<%=contextPath%>/detail.bo?bno=" + $(this).children().eq(0).text();
 		})
 		
-			
-		
-		
 	</script>
-
-
+	
+	
+	<%@ include file="../common/footerbar.jsp" %>
 </body>
 </html>

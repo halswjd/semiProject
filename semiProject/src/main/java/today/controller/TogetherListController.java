@@ -1,4 +1,4 @@
-package board.controller;
+package today.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,20 +11,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import board.model.service.BoardService;
-import board.model.vo.Board;
+import today.model.service.TodayService;
+import today.model.vo.Today;
 
 /**
- * Servlet implementation class BoardSelectListController
+ * Servlet implementation class TogetherListController
  */
-@WebServlet("/list.bo1")
-public class BoardSelectListController extends HttpServlet {
+@WebServlet("/list.tg")
+public class TogetherListController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardSelectListController() {
+    public TogetherListController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -34,11 +34,11 @@ public class BoardSelectListController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		ArrayList<Board> list = new BoardService().ajaxBoardList();
+		ArrayList<Today> list = new TodayService().selectTogetherList();
 		
-		response.setContentType("application/json; charset=utf-8");
 		
-		new Gson().toJson(list, response.getWriter());
+		request.setAttribute("list", list);
+		request.getRequestDispatcher("views/today/togetherListView.jsp").forward(request, response);
 		
 	}
 

@@ -15,6 +15,7 @@ public class Board {
 	
 	private int likeCount;
 	private int replyCount;
+	private int userNo;
 	
 	public Board() {}
 
@@ -50,7 +51,7 @@ public class Board {
 	
 
 	public Board(int boardNo, String boardTitle, String boardContent, String hashtag, int count, String boardWriter,
-			String category, String createDate, int replyCount) {
+			String category, String createDate, int replyCount, int userNo) {
 		super();
 		this.boardNo = boardNo;
 		this.boardTitle = boardTitle;
@@ -61,6 +62,7 @@ public class Board {
 		this.category = category;
 		this.createDate = createDate;
 		this.replyCount = replyCount;
+		this.userNo = userNo;
 	}
 
 	public int getBoardNo() {
@@ -157,6 +159,15 @@ public class Board {
 
 	public void setReplyCount(int replyCount) {
 		this.replyCount = replyCount;
+	}
+	
+
+	public int getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(int userNo) {
+		this.userNo = userNo;
 	}
 
 	@Override

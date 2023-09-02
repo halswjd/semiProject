@@ -9,6 +9,8 @@ public class Reply {
 	private int boardNo;
 	private String replyWriter;
 	
+	private int userNo;
+	
 	public Reply() {}
 
 	public Reply(int replyNo, String replyContent, String createDate, String status, int boardNo, String replyWriter) {
@@ -22,12 +24,15 @@ public class Reply {
 	}
 	
 
-	public Reply(int replyNo, String replyContent, String createDate, String replyWriter) {
+	
+
+	public Reply(int replyNo, String replyContent, String createDate, String replyWriter, int userNo) {
 		super();
 		this.replyNo = replyNo;
 		this.replyContent = replyContent;
 		this.createDate = createDate;
 		this.replyWriter = replyWriter;
+		this.userNo = userNo;
 	}
 
 	public int getReplyNo() {
@@ -76,6 +81,14 @@ public class Reply {
 
 	public void setReplyWriter(String replyWriter) {
 		this.replyWriter = replyWriter;
+	}
+
+	public int getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(int userNo) {
+		this.userNo = userNo;
 	}
 
 	@Override

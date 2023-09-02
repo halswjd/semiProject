@@ -1,86 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<entry key="selectBoardListCount">
-	SELECT COUNT(*) "COUNT"
-	  FROM BOARD
-	 WHERE STATUS = 'Y'
-	   AND BOARD_TYPE = 1
-</entry>
-<entry key="selectBoardList">
-	SELECT *
-	  FROM (
-	        SELECT ROWNUM AS "RNUM", A.*
-	          FROM (
-	                SELECT
-	                        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
-	                      , CATEGORY_NAME
-	                      , BOARD_TITLE
-	                      , NICKNAME
-	                      , COUNT
-	                      , TO_CHAR(CREATE_DATE, 'YY/MM/DD') AS "CREATE_DATE"
-	                      , (
-	                          SELECT COUNT(*)
-	                            FROM REPLY
-	                           WHERE REF_BNO = B.BOARD_NO
-	                             AND STATUS = 'Y'
-	                       ) AS "REPLY_COUNT"
-	                       , (
-	                         SELECT COUNT(*)
-	                           FROM LIKES L
-	                         WHERE L.BOARD_NO = B.BOARD_NO
-	                       ) AS "LIKE_COUNT"
-	                  FROM BOARD B
-	                  JOIN CATEGORY USING (CATEGORY_NO)
-	                  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
-	                 WHERE BOARD_TYPE = 1
-	                   AND B.STATUS = 'Y'
-	                 ORDER
-	                    BY BOARD_NO DESC
-	                ) A
-	        )
-	WHERE RNUM BETWEEN ? AND ?
-</entry>
 <entry key="selectCategoryList">
 	SELECT
 	        CATEGORY_NO
 	      , CATEGORY_NAME
 	  FROM CATEGORY	
-</entry>
-<entry key="selectSubjectList">
-	SELECT *
-		  FROM (
-		        SELECT ROWNUM AS "RNUM", A.*
-		          FROM (
-		                SELECT
-		                        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
-		                      , CATEGORY_NAME
-		                      , BOARD_TITLE
-		                      , NICKNAME
-		                      , COUNT
-		                      , TO_CHAR(CREATE_DATE, 'YY/MM/DD') AS "CREATE_DATE"
-		                      , (
-		                          SELECT COUNT(*)
-		                            FROM REPLY
-		                           WHERE REF_BNO = B.BOARD_NO
-		                             AND STATUS = 'Y'
-		                       ) AS "REPLY_COUNT"
-		                       , (
-		                         SELECT COUNT(*)
-		                           FROM LIKES L
-		                         WHERE L.BOARD_NO = B.BOARD_NO
-		                       ) AS "LIKE_COUNT"
-		                  FROM BOARD B
-		                  JOIN CATEGORY USING (CATEGORY_NO)
-		                  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
-		                 WHERE BOARD_TYPE = 1
-		                   AND B.STATUS = 'Y'
-	                       AND CATEGORY_NO = ?
-		                 ORDER
-		                    BY BOARD_NO DESC
-		                ) A
-		        )
-		WHERE RNUM BETWEEN ? AND ?
 </entry>
 <entry key="increaseCount">
 	UPDATE BOARD
@@ -95,9 +20,10 @@
 	      , BOARD_CONTENT
 	      , NICKNAME
 	      , CATEGORY_NAME
-	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD') AS "CREATE_DATE"
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') AS "CREATE_DATE"
 	      , COUNT
 	      , HASHTAG
+	      , USER_NO
 	      , (
 	          SELECT COUNT(*)
 	            FROM REPLY
@@ -205,6 +131,7 @@
 <entry key="selectReplyList">
 	SELECT
 	        REPLY_NO
+          , USER_NO
 	      , REPLY_CONTENT
 	      , NICKNAME
 	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') "CREATE_DATE"
@@ -214,5 +141,53 @@
 	   AND REF_BNO = 'B' || ?
 	 ORDER
 	    BY REPLY_NO DESC
+</entry>
+<entry key="deleteReply">
+	UPDATE REPLY
+	   SET STATUS = 'N'
+	 WHERE REPLY_NO = ?
+</entry>
+<entry key="insertReply">
+	INSERT 
+	  INTO REPLY
+	(
+	  REPLY_NO
+	, REPLY_CONTENT
+	, REF_BNO
+	, REPLY_WRITER
+	)
+	VALUES
+	(
+	  SEQ_RPLNO.NEXTVAL
+	, ?
+	, 'B' || ?
+	, ?
+	)
+</entry>
+<entry key="reportBoard">
+	INSERT
+	  INTO REPORT
+	  (
+	    REPORT_NO
+	  , GUILTY
+	  , REPORT_CONTENT
+	  , BOARD_NO
+	  , REPORT_UNO
+	  , REPORTED_UNO
+	  )
+	  VALUES
+	  (
+	    SEQ_REPNO.NEXTVAL
+	  , ?
+	  , ?
+	  , ?
+	  , ?
+	  , ?
+	  )
+</entry>
+<entry key="deleteBoard">
+	UPDATE BOARD
+	   SET STATUS = 'N'
+	 WHERE BOARD_NO = 'B'|| ?
 </entry>
 </properties>

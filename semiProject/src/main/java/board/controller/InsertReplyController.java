@@ -8,19 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board.model.service.BoardService;
-import board.model.vo.Board;
 
 /**
- * Servlet implementation class BoardDetailViewController
+ * Servlet implementation class InsertReplyController
  */
-@WebServlet("/detail.bo")
-public class BoardDetailViewController extends HttpServlet {
+@WebServlet("/insertReply.bo")
+public class InsertReplyController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardDetailViewController() {
+    public InsertReplyController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,21 +29,19 @@ public class BoardDetailViewController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		int boardNo =  Integer.parseInt(request.getParameter("bno"));
+		request.setCharacterEncoding("utf-8");
 		
-		int result = new BoardService().increaseCount(boardNo);
+		int userNo = Integer.parseInt(request.getParameter("userNo"));
+		int boardNo = Integer.parseInt(request.getParameter("bno"));
+		String comment = request.getParameter("comment");
 		
-		if(result > 0) { // 유효한게시글
-			
-			Board b = new BoardService().selectBoard(boardNo);
-			
-			
-			request.setAttribute("b", b);
-			
-			request.getRequestDispatcher("views/board/boardDetailView.jsp").forward(request, response);
-			
+		int result = new BoardService().insertReply(boardNo, userNo, comment);
+		
+		if(result > 0) {
+			response.sendRedirect(request.getContextPath() + "/detail.bo?bno=" + boardNo);
+		}else {
+			request.getSession().setAttribute("alertMsg", "댓글작성 실패");
 		}
-		
 		
 	}
 
