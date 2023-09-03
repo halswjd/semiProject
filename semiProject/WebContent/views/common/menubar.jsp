@@ -145,7 +145,7 @@
                 // 해당 페이지 스타일부여하는 함수
                 const a = location.href;
                 
-                const b = ["/listView.bo", "/detail.bo"];
+                const b = ["/listView.bo", "/detail.bo", "/enrollForm.bo"];
                 const c = ["/list.tg", "/detail.tg", "/enrollFormView.tg"];
                 
                 

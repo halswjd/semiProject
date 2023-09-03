@@ -29,7 +29,7 @@ public class BookmarkCheckController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
+		String boardNo = request.getParameter("boardNo");
 		int userNo = Integer.parseInt(request.getParameter("userNo"));
 		
 		

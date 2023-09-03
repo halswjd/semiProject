@@ -224,7 +224,7 @@
 	  INTO ATTACHMENT
 	  (
 	    FILE_NO
-	  , REF_NO
+	  , REF_BNO
 	  , ORIGIN_NAME
 	  , CHANGE_NAME
 	  , FILE_PATH
@@ -233,16 +233,11 @@
 	  VALUES
 	  (
 	    SEQ_FNO.NEXTVAL
-	  , 'B' || SEQ_BNO.CURRVAL
+	  , SEQ_BNO.CURRVAL
 	  , ?
 	  , ?
 	  , ?
 	  , 2
 	  )
-</entry>
-<entry key="boardImgList">
-	SELECT FILE_PATH
-	  FROM ATTACHMENT
-	 WHERE REF_NO = ?
 </entry>
 </properties>

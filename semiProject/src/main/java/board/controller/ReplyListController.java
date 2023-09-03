@@ -34,7 +34,7 @@ public class ReplyListController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
+		String boardNo = request.getParameter("boardNo");
 		
 		
 		ArrayList<Reply> list = new BoardService().selectReplyList(boardNo);

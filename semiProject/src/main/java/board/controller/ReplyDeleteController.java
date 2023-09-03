@@ -30,20 +30,10 @@ public class ReplyDeleteController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		int replyNo = Integer.parseInt(request.getParameter("rno"));
-		int boardNo = Integer.parseInt(request.getParameter("bno"));
 		
 		int result = new BoardService().deleteReply(replyNo);
 		
-		if(result > 0) {
-			
-			request.getSession().setAttribute("alertMsg", "댓글 삭제 성공");
-			response.sendRedirect(request.getContextPath() + "/detail.bo?bno=" + boardNo);
-			
-		}else {
-			//실패...
-			System.out.println("댓글삭제 실패");
-		}
-		
+		response.getWriter().print(result);
 	}
 
 	/**

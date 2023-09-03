@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 
 import board.model.dao.BoardDao;
+import board.model.vo.Attachment;
 import board.model.vo.Board;
 import board.model.vo.Category;
 import board.model.vo.Reply;
@@ -14,29 +15,7 @@ import static common.JDBCTemplate.*;
 
 public class BoardService {
 	
-//	public int selectBoardListCount() {
-//		
-//		Connection conn = getConnection();
-//		
-//		int count = new BoardDao().selectBoardListCount(conn);
-//		
-//		close(conn);
-//		
-//		return count;
-//		
-//	}
-//
-//	public ArrayList<Board> selectBoardList(PageInfo pi){
-//		
-//		Connection conn = getConnection();
-//		
-//		ArrayList<Board> list = new BoardDao().selectBoardList(conn, pi);
-//		
-//		close(conn);
-//		
-//		return list;
-//	}
-//	
+
 	public ArrayList<Board> ajaxBoardList(){
 		
 		Connection conn = getConnection();
@@ -58,18 +37,7 @@ public class BoardService {
 		
 		return categoryList;
 	}
-//	
-//	public ArrayList<Board> selectSubjectList(PageInfo pi, int categoryNo){
-//		
-//		Connection conn = getConnection();
-//		
-//		ArrayList<Board> list = new BoardDao().selectSubjectList(conn, pi, categoryNo);
-//		
-//		close(conn);
-//		
-//		return list;
-//	}
-//	
+
 	public int increaseCount(int boardNo) {
 		
 		Connection conn = getConnection();
@@ -99,7 +67,7 @@ public class BoardService {
 		
 	}
 	
-	public int insertLike(int userNo, int boardNo) {
+	public int insertLike(int userNo, String boardNo) {
 		
 		Connection conn = getConnection();
 		
@@ -115,7 +83,7 @@ public class BoardService {
 		return result;
 	}
 	
-	public int deleteLike(int userNo, int boardNo) {
+	public int deleteLike(int userNo, String boardNo) {
 		
 		Connection conn = getConnection();
 		
@@ -132,7 +100,7 @@ public class BoardService {
 		return result;
 	}
 	
-	public int checkLike(int userNo, int boardNo) {
+	public int checkLike(int userNo, String boardNo) {
 		
 		Connection conn = getConnection();
 		
@@ -144,7 +112,7 @@ public class BoardService {
 		
 	}
 	
-	public int insertBook(int userNo, int boardNo) {
+	public int insertBook(int userNo, String boardNo) {
 		
 		Connection conn = getConnection();
 		
@@ -161,7 +129,7 @@ public class BoardService {
 		return result;
 	}
 	
-	public int deleteBook(int userNo, int boardNo) {
+	public int deleteBook(int userNo, String boardNo) {
 		Connection conn = getConnection();
 		
 		int result = new BoardDao().deleteBook(conn, userNo, boardNo);
@@ -177,7 +145,7 @@ public class BoardService {
 		return result;
 	}
 	
-	public int checkBook(int userNo, int boardNo) {
+	public int checkBook(int userNo, String boardNo) {
 		
 		Connection conn = getConnection();
 		
@@ -200,7 +168,7 @@ public class BoardService {
 		return list;
 	}
 	
-	public ArrayList<Reply> selectReplyList(int boardNo){
+	public ArrayList<Reply> selectReplyList(String boardNo){
 		
 		Connection conn = getConnection();
 		
@@ -223,11 +191,13 @@ public class BoardService {
 			close(conn);
 		}
 		
+		close(conn);
+		
 		return result;
 		
 	}
 	
-	public int insertReply(int boardNo, int userNo, String comment) {
+	public int insertReply(String boardNo, int userNo, String comment) {
 		
 		Connection conn = getConnection();
 		
@@ -238,6 +208,8 @@ public class BoardService {
 		}else {
 			rollback(conn);
 		}
+		
+		close(conn);
 		
 		return result;
 		
@@ -261,7 +233,7 @@ public class BoardService {
 		
 	}
 	
-	public int deleteBoard(int boardNo) {
+	public int deleteBoard(String boardNo) {
 		
 		Connection conn = getConnection();
 		
@@ -273,6 +245,51 @@ public class BoardService {
 			rollback(conn);
 		}
 		
+		close(conn);
+		
 		return result;
+	}
+	
+	public int countReply(String boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().countReply(conn, boardNo);
+		
+		close(conn);
+		
+		return result;
+		
+	}
+	
+	public int insertBoard(Board b, ArrayList<Attachment> list) {
+		
+		Connection conn = getConnection();
+		
+		int result1 = new BoardDao().insertBoard(conn, b);
+		
+		int result2 = 1;
+		
+		System.out.println("fileList 있냐 없냐" + list.isEmpty());
+		if(!list.isEmpty()) {
+			result2 = new BoardDao().insertAttachmentList(conn, list);
+			System.out.println("result2값 : " + result2);
+		}
+		
+		if(result1 > 0 && result2 >0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		return result1 * result2;
+	}
+	
+	public String[] boardImgList(String boardNo) {
+		
+		Connection conn = getConnection();
+		
+		String[] filePath = new BoardDao().boardImgList(conn, boardNo);
+		
 	}
 }

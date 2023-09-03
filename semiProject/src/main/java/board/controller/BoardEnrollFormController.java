@@ -1,6 +1,8 @@
 package board.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,18 +10,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board.model.service.BoardService;
+import board.model.vo.Category;
 
 /**
- * Servlet implementation class BoardLikeDeleteController
+ * Servlet implementation class BoardEnrollFormController
  */
-@WebServlet("/likeDelete.bo")
-public class BoardLikeDeleteController extends HttpServlet {
+@WebServlet("/enrollForm.bo")
+public class BoardEnrollFormController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardLikeDeleteController() {
+    public BoardEnrollFormController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,17 +32,7 @@ public class BoardLikeDeleteController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String boardNo = request.getParameter("boardNo");
-		int userNo = Integer.parseInt(request.getParameter("userNo"));
-		
-		
-		int result = new BoardService().deleteLike(userNo, boardNo);
-		
-		if(result > 0) {
-			response.getWriter().print("Y");
-		}else {
-			response.getWriter().print("N");
-		}
+		request.getRequestDispatcher("views/board/boardEnrollForm.jsp").forward(request, response);;
 	}
 
 	/**

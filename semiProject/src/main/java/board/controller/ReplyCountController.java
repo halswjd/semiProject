@@ -10,16 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import board.model.service.BoardService;
 
 /**
- * Servlet implementation class BoardLikeDeleteController
+ * Servlet implementation class ReplyCountController
  */
-@WebServlet("/likeDelete.bo")
-public class BoardLikeDeleteController extends HttpServlet {
+@WebServlet("/countReply.bo")
+public class ReplyCountController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardLikeDeleteController() {
+    public ReplyCountController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,16 +30,10 @@ public class BoardLikeDeleteController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String boardNo = request.getParameter("boardNo");
-		int userNo = Integer.parseInt(request.getParameter("userNo"));
 		
+		int result = new BoardService().countReply(boardNo);
 		
-		int result = new BoardService().deleteLike(userNo, boardNo);
-		
-		if(result > 0) {
-			response.getWriter().print("Y");
-		}else {
-			response.getWriter().print("N");
-		}
+		response.getWriter().print(result);
 	}
 
 	/**

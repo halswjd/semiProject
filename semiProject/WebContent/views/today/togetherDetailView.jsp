@@ -10,10 +10,14 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+ <!-- jQuery library -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+ <!-- 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css" rel="stylesheet">
+ -->
     <style>
         .outer{
             width: 1200px;
@@ -106,6 +110,12 @@
         }
         #comment b{font-size: 15px;}
 
+		#bar>button{
+            border: none;
+            background-color: rgba(0, 0, 0, 0);
+            font-size: 14px;
+        }
+
         /* hover */
         #bar>span:hover, .cmt_delete:hover{
             font-weight: bolder;
@@ -167,13 +177,13 @@
             </div>
                 <%if(loginMember == null){ %>
                     <div id="bar" align="right"></div>
-                <%}else if(loginMember.getUserNo() == Integer.parseInt(t.getTodayWriter())){%>
+                <%}else if(loginMember.getUserNo() == t.getUserNo() ){%>
                     <div id="bar" align="right"><button style="color:tomato;" onclick="deleteBoard();">글 삭제</button></div>
                 <%}else{ %>
                 <div id="bar" align="right">
                     <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
                     <button id="bookmark1" onclick="insertBook();"><img src="resources/image/bookmark_blank.png" width="25" height="25"></button>
-                    <button id="bookmark2" onclick="deleteBook();" style="display: none;"><img src="resources/image/bookmark.png" width="25" height="25"></button>
+               		<button id="bookmark2" onclick="deleteBook();" style="display: none;"><img src="resources/image/bookmark.png" width="25" height="25"></button>
                 </div>
                 <%} %>
             <div id="comment">
@@ -197,6 +207,75 @@
             </div>
         </div>
     </div>
+    
+    <script>
+    	let bno = "<%= t.getTodayNo()%>";
+    	<% if(loginMember != null){%>
+    	let userNo = "<%= loginMember.getUserNo()%>";
+    	
+	    function insertBook(){
+	        
+	           $.ajax({
+	            url:"book.bo",
+	            data:{boardNo:bno, userNo:userNo},
+	            success:function(result){
+	                console.log("성공")
+	                if(result == 'Y'){
+	                	$("#bookmark1").css("display", "none");
+	                    $("#bookmark2").css("display", "");
+	                }
+	            },
+	            error:function(){
+	                console.log("실패")
+	            }
+	           })
+	        	
+	    }
+	
+	    function deleteBook(){
+	    
+	           $.ajax({
+	            url:"deleteBook.bo",
+	            data:{boardNo:bno, userNo:userNo},
+	            success:function(result){
+	                console.log("성공")
+	                if(result == 'Y'){
+	                	$("#bookmark1").css("display", "");
+	                    $("#bookmark2").css("display", "none");
+	                }
+	            },
+	            error:function(){
+	                console.log("실패")
+	            }
+	           })
+	        	
+	    }
+	    
+	    $(function(){
+
+            	
+	            $.ajax({
+	                url:"bookCheck.bo",
+	                data:{boardNo:bno, userNo:userNo},
+	                success:function(result){
+	                    console.log("성공");
+	                    if(result == 'Y'){
+	                    	$("#bookmark2").css("display", "");
+	                        $("#bookmark1").css("display", "none");
+	                    }else{
+	                    	$("#bookmark2").css("display", "none");
+	                        $("#bookmark1").css("display", "");                    	
+	                    }
+	                },
+	                error:function(result){
+	                    console.log("실패");
+	                }
+	            })
+            
+	    })
+	    <%} %>
+    </script>
+    
     <div class="modal" id="reportBoard">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -218,6 +297,7 @@
                 <% if(loginMember != null){ %>
                 <input name="reportUserNo" type="hidden" value="<%= loginMember.getUserNo()%>">
                 <%} %>
+                
                 <hr>
                 
                     <input type="radio" id="r1" name="report" value="영리목적/홍보성">
@@ -242,6 +322,8 @@
             
         </div>
     </div>
+    
+    
     <%@ include file="../common/footerbar.jsp" %>
 </body>
 </html>

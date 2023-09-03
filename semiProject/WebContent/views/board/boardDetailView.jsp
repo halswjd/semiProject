@@ -10,7 +10,7 @@
 	
 	if(b.getHashtag() != null){
 	String hashtag = b.getHashtag().trim().replaceAll(" ", "");
-	hashtagList = hashtag.split("#");				
+	hashtagList = hashtag.split(",");				
 	}
 	
 %>
@@ -20,7 +20,7 @@
 <meta charset="UTF-8">
 <title>자유게시판 - MOUNTAINEER</title>
  <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
 <style>
         .outer{
@@ -57,7 +57,7 @@
             font-size: 20px;
             line-height: 35px;
             /* border: 1px solid black; */
-            margin-bottom: 100px;
+            margin-bottom: 50px;
         }
 
         #h_etc>span, #bar>span, #cmt_etc>span{margin-right: 10px;}
@@ -150,7 +150,7 @@
             </div>
             <div id="hashtag">
             <%if(hashtagList[0] != null){ %>
-                <% for(int i=1; i<hashtagList.length; i++){ %>
+                <% for(int i=0; i<hashtagList.length; i++){ %>
                     <div class="hashtag">
                         # <%= hashtagList[i] %>
                     </div>
@@ -175,21 +175,20 @@
             <%} %>
             
             <div id="comment">
-                <b>댓글 <%=b.getReplyCount() %></b>
+                <b>댓글 <span id="countReply">보기와 작성은 로그인 후 가능합니다</span></b>
                 <div id="comment-area2">
                     <form action="<%= contextPath %>/insertReply.bo" method="post">
-                    	<input name="bno" type="hidden" value="<%= b.getBoardNo()%>">
-                        <textarea name="comment" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요" required></textarea>
+                    </form>
+                        <textarea id="rContent" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요" required></textarea>
                         <div id="cmt_btn" align="right">
                             <button type="reset">취소</button>
                             <%if(loginMember != null){ %>
                             <input name="userNo" type="hidden" value="<%= loginMember.getUserNo()%>">
-                            <button type="submit">등록</button>
+                            <button type="button" onclick="insertReply();">등록</button>
                             <%}else{ %>
                             <button type="submit" disabled>등록</button>
                             <%} %>
                         </div>
-                    </form>
                 </div>
                 <div id="comment-list">
                     
@@ -199,19 +198,15 @@
             </div>
         </div>
     </div>
-    <input name="bno" type="hidden" value="<%= b.getBoardNo()%>">
-    <%if(loginMember != null){ %>
-    <input name="userNo" type="hidden" value="<%= loginMember.getUserNo()%>">
-    <%} %>
-    
 
     <script>
+	    let bno = "B<%= b.getBoardNo()%>";
+		<% if(loginMember != null){%>
+			let userNo = "<%= loginMember.getUserNo()%>";
+    
  		// ----- 좋아요 관련 -----------
         function insertLike(){
-        	let bno = $("input[name=bno]").val();
-            let userNo = $("input[name=userNo]").val();
             
-            if(userNo != null){
 	           $.ajax({
 	            url:"like.bo",
 	            data:{boardNo:bno, userNo:userNo},
@@ -223,18 +218,14 @@
 	                }
 	            },
 	            error:function(){
-	                console.log("실패")
+	                console.log("실패");
 	            }
 	           })
             	
-            }
         }
         
         function deleteLike(){
-        	let bno = $("input[name=bno]").val();
-            let userNo = $("input[name=userNo]").val();
             
-            if(userNo != null){
             	 $.ajax({
                      url:"likeDelete.bo",
                      data:{boardNo:bno, userNo:userNo},
@@ -249,7 +240,6 @@
                          console.log("실패")
                      }
                     })
-            }
           
         }
         
@@ -258,10 +248,7 @@
 		// ----- 북마크 관련 -----------
 
         function insertBook(){
-            let bno = $("input[name=bno]").val();
-            let userNo = $("input[name=userNo]").val();
             
-            if(userNo != null){
 	           $.ajax({
 	            url:"book.bo",
 	            data:{boardNo:bno, userNo:userNo},
@@ -277,14 +264,10 @@
 	            }
 	           })
             	
-            }
         }
 
         function deleteBook(){
-            let bno = $("input[name=bno]").val();
-            let userNo = $("input[name=userNo]").val();
             
-            if(userNo != null){
 	           $.ajax({
 	            url:"deleteBook.bo",
 	            data:{boardNo:bno, userNo:userNo},
@@ -296,19 +279,16 @@
 	                }
 	            },
 	            error:function(){
-	                console.log("실패")
+	                console.log("실패");
 	            }
 	           })
             	
-            }
         }
         
-        // 북마크, 좋아요 체크 함수
         $(function(){
-        	let userNo = $("input[name=userNo]").val();
-            let bno = $("input[name=bno]").val();
-            if(userNo != null){
+        	selectReplyList();
             	
+        // 북마크, 좋아요 체크 함수
 	            $.ajax({
 	                url:"likeCheck.bo",
 	                data:{boardNo:bno, userNo:userNo},
@@ -344,58 +324,102 @@
 	                    console.log("실패");
 	                }
 	            })
-	            
-            }
-	            // 댓글 리스트
-                let charHtml = "";
-	            
-	            $.ajax({
-	            	url:"replyList.bo",
-	            	data:{boardNo:bno},
-	            	success:function(list){
-	            		console.log("댓글 메소드 탐");
-	            		for(let i=0; i<list.length; i++){
-		            		charHtml += "<div class='comment-area1'>"
-		            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
-		            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>"
-		            				  + "<div class='cmt_etc'>" + list[i].createDate;
-	            				  if(userNo == list[i].userNo){
-		            				  charHtml += "<p class='deleteReply-btn' onclick='deleteReply($(this));'>삭제</p>"
-		            				  		   + "<input type='hidden' value='" + list[i].replyNo + "'>"
-		            					 	   + "</div></div>"; 
-	            				  }else{
-	            					  charHtml += "</div></div>";
-	            				  }
-		            				  
-	            		}
-	            		
-	            		$("#comment-list").html(charHtml);
-	            		
-	            	},
-	            	error:function(){
-	            		console.log("댓글 불러오기 실패");
-	            	}
-	            	
-	            })
-	            
-
-            
-        })
+        })   
         
+    	function selectReplyList(){
+       	
+	    	// 댓글 리스트
+            let charHtml = "";
+            
+            $.ajax({
+            	url:"replyList.bo",
+            	data:{boardNo:bno},
+            	success:function(list){
+            		console.log("댓글 메소드 탐");
+            		for(let i=0; i<list.length; i++){
+	            		charHtml += "<div class='comment-area1'>"
+	            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
+	            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>"
+	            				  + "<div class='cmt_etc'>" + list[i].createDate;
+            				  if(userNo == list[i].userNo){
+	            				  charHtml += "<p class='deleteReply-btn' onclick='deleteReply($(this));'>삭제</p>"
+	            				  		   + "<input type='hidden' value='" + list[i].replyNo + "'>"
+	            					 	   + "</div></div>"; 
+            				  }else{
+            					  charHtml += "</div></div>";
+            				  }
+	            				  
+            		}
+            		
+            		$("#comment-list").html(charHtml);
+            		
+            	},
+            	error:function(){
+            		console.log("댓글 불러오기 실패");
+            	}
+            	
+            })
+            
+            // 댓글 갯수
+            $.ajax({
+            	url:"countReply.bo",
+            	data:{boardNo:bno},
+            	success:function(result){
+            		$("#countReply").text(result);
+            	},
+            	error:function(){
+            		console.log("댓글카운트 ajax 통신 실패");
+            	}
+            })
+       	}
+	    	
+	    
+	    <%}%> 
+	    
+	    // 댓글 작성 함수
+	    function insertReply(){
+	    	
+	    	$.ajax({
+	    		url:"insertReply.bo",
+	    		data:{
+	    			comment:$("#rContent").val(),
+	    			boardNo:bno
+	    		},
+	    		type:"post",
+	    		success:function(result){
+	    			if(result > 0){
+	    				selectReplyList();
+	    				$("#rContent").val("");
+	    			}
+	    		}
+	    		
+	    	})
+	    }
+	    
+	    
      	// 댓글 삭제 함수
 		function deleteReply(e){
-        	let bno = $("input[name=bno]").val();
         	let replyNo = e.next().val();
         	
         	if(confirm("댓글을 삭제하시겠습니까?")){
-	           	location.href='<%= contextPath%>/deleteReply.bo?rno=' + replyNo + '&bno=' + bno;
+        		$.ajax({
+        			url:"deleteReply.bo",
+        			data:{rno:replyNo},
+        			success:function(result){
+        				if(result > 0){
+        					selectReplyList();
+        				}
+        			},
+        			error:function(){
+        				console.log("댓글작성 ajax 통신 실패");
+        			}
+        		})
         	}
      
         }
         
         // 게시글 삭제 함수
         function deleteBoard(){
-        	let bno = $("input[name=bno]").val();
         	
         	if(confirm("해당 게시글을 삭제하시겠습니까?")){
 	        	location.href = "<%= contextPath %>/delete.bo?bno=" + bno;
@@ -403,6 +427,21 @@
         	
         }
         
+        // 게시글 사진 불러오는 함수
+        $(function(){
+        	
+        	$.ajax({
+        		url:"list.img",
+        		data:{boardNo:bno},
+				success:function(filePathArr){
+					
+				},
+				error:function(){
+					
+				}
+        	})
+        	
+        })
         
     </script>
 

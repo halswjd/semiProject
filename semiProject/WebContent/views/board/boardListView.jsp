@@ -234,7 +234,7 @@ button>img {
 				<%
 				} else {
 				%>
-					<button type="button" class="btn btn-secondary">글쓰기</button>
+					<button type="button" class="btn btn-secondary" onclick="insertBoard();">글쓰기</button>
 				<%
 				}
 				%>
@@ -493,6 +493,11 @@ button>img {
 		$(".list-area").children("tbody").on("click","tr",function(){
     		location.href="<%=contextPath%>/detail.bo?bno=" + $(this).children().eq(0).text();
 		})
+		
+		// 게시글 작성
+		function insertBoard(){
+			location.href="<%=contextPath%>/enrollForm.bo";
+		}
 		
 	</script>
 	

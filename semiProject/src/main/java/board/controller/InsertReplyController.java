@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board.model.service.BoardService;
+import member.model.vo.Member;
 
 /**
  * Servlet implementation class InsertReplyController
@@ -29,19 +30,15 @@ public class InsertReplyController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		request.setCharacterEncoding("utf-8");
 		
-		int userNo = Integer.parseInt(request.getParameter("userNo"));
-		int boardNo = Integer.parseInt(request.getParameter("bno"));
+		int userNo = ((Member)request.getSession().getAttribute("loginMember")).getUserNo();
+		String boardNo = request.getParameter("boardNo");
 		String comment = request.getParameter("comment");
+		
 		
 		int result = new BoardService().insertReply(boardNo, userNo, comment);
 		
-		if(result > 0) {
-			response.sendRedirect(request.getContextPath() + "/detail.bo?bno=" + boardNo);
-		}else {
-			request.getSession().setAttribute("alertMsg", "댓글작성 실패");
-		}
+		response.getWriter().print(result);
 		
 	}
 
