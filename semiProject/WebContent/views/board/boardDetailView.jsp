@@ -6,7 +6,7 @@
 	Board b = (Board)request.getAttribute("b");
 	// 글번호, 글제목, 글내용, 해시태그, 조회수, 닉네임, 말머리, 작성일자, 댓글수, 작성자유저번호
 	
-	String[] hashtagList = new String[10];
+	String[] hashtagList = new String[20];
 	
 	if(b.getHashtag() != null){
 	String hashtag = b.getHashtag().trim().replaceAll(" ", "");
@@ -57,9 +57,17 @@
             font-size: 20px;
             line-height: 35px;
             /* border: 1px solid black; */
-            margin-bottom: 50px;
+            margin-bottom: 30px;
         }
-
+	
+		#content-img{
+            margin-bottom: 100px;
+		}
+		 #content-img>img{
+            border: 1px solid rgb(219, 219, 219);
+            margin:10px;
+        }
+	
         #h_etc>span, #bar>span, #cmt_etc>span{margin-right: 10px;}
         #comment{
             padding: 20px;
@@ -148,6 +156,11 @@
             <div id="content">
                <%= b.getBoardContent() %>
             </div>
+            
+            <div id="content-img">
+            	
+            </div>
+            
             <div id="hashtag">
             <%if(hashtagList[0] != null){ %>
                 <% for(int i=0; i<hashtagList.length; i++){ %>
@@ -163,7 +176,7 @@
             <%if(loginMember == null){ %>
             <div id="bar" align="right"></div>
             <%}else if(loginMember.getUserNo() == b.getUserNo()){%>
-            <div id="bar" align="right"><button style="color:tomato;" onclick="deleteBoard();">글 삭제</button></div>
+            <div id="bar" align="right"><button style="color:tomato;" onclick="deleteBoard();">글 삭제</button><button style="color:rgb(58,58,58);" onclick="updateBoard();">글 수정</button></div>
             <%}else{ %>
             <div id="bar" align="right">
                 <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
@@ -427,17 +440,36 @@
         	
         }
         
+        // 게시글 수정 함수
+        function updateBoard(){
+			location.href="<%= contextPath%>/updateView.bo?bno="+<%= b.getBoardNo()%>;        	
+        }
+        
+        
+        
         // 게시글 사진 불러오는 함수
         $(function(){
         	
         	$.ajax({
         		url:"list.img",
         		data:{boardNo:bno},
-				success:function(filePathArr){
-					
+				success:function(imgList){
+					if(imgList.length > 0){
+						console.log(imgList.length);
+						let inputHtml = "";
+						let contextPath = "<%= contextPath %>";
+						for(let i=0; i<imgList.length; i++){
+							console.log("for문 돔");
+							inputHtml += "<img src='" + contextPath + "/" + imgList[i].filePath + "/" + imgList[i].changeName + "' width='300' height='300'>"; 
+						}
+							
+						$("#content-img").html(inputHtml);
+					}else{
+						console.log("이미지 없음");
+					}
 				},
 				error:function(){
-					
+					console.log("이미지 조회 ajax 통신 실패");
 				}
         	})
         	

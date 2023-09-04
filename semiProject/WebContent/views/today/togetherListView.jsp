@@ -105,7 +105,7 @@
 						<input type="hidden" class="todayNo" value="<%= t.getTodayNo() %>">
                         <table>
                             <tbody>
-                                <tr height="30" style="font-size: 20px; font-weight: bolder;">
+                                <tr height="30" style="font-size: 18px; font-weight: bolder;">
                                     <td><%= t.getTodayTitle() %></td>
                                 </tr>
                                 <tr>

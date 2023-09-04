@@ -388,6 +388,7 @@ button>img {
 			
 			console.log("오늘날짜" + dateString);
 			
+			
 			for (let i = start; i < end && i<listCount; i++) {
 
 				charHtml += '<tr align="center">'
@@ -400,10 +401,10 @@ button>img {
 					charHtml += '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '<span>' + dataList[i].replyCount + '</span></td>' 
 				}
 					charHtml += '<td>'+ dataList[i].boardWriter + '</td>' ;
-				if('20' + dataList[i].createDate == dateString){
-					charHtml += '<td>오늘</td>';					
+				if('20' + dataList[i].createDate.substr(0,8) == dateString){
+					charHtml += '<td>'+ dataList[i].createDate.substr(9) +'</td>';					
 				}else{
-					charHtml += '<td>'+ dataList[i].createDate + '</td>';
+					charHtml += '<td>'+ dataList[i].createDate.substr(0,8) + '</td>';
 				}
 					charHtml += '<td>'+ dataList[i].likeCount + '</td>' 
 							 + '<td>'+ dataList[i].count + '</td>' + '</tr>';

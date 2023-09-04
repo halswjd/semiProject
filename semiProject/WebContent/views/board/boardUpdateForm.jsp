@@ -1,7 +1,14 @@
+<%@page import="board.model.vo.Attachment"%>
+<%@page import="board.model.vo.Board"%>
 <%@page import="board.model.vo.Category"%>
 <%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%
+	Board b = (Board)request.getAttribute("b");
+	ArrayList<Attachment> list = (ArrayList<Attachment>)request.getAttribute("list");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,6 +98,19 @@
             margin-left: 10px;
             margin-bottom: 5px;
         }
+        #img-area>div{
+            display: inline-block;
+        }
+        .img-div{
+            position: relative;
+        }
+        .img-delete-btn{
+            position: absolute;
+            top: 10; right: 1px;
+            border: none;
+            background-color: black;
+            color: white;
+        }
         
     </style>
 </head>
@@ -99,8 +119,8 @@
     <div class="outer">
         <div class="wrap">
         	<h1 align="center" id="ttl">자유게시판 작성</h1>
-            <form action="<%= contextPath %>/insert.bo" method="post" enctype="multipart/form-data">
-            	<input type="hidden" value="<%= loginMember.getUserNo()%>" name="userNo">
+            <form action="<%= contextPath %>/update.bo" id="update-form" method="post" enctype="multipart/form-data">
+            	<input type="hidden" value="<%= b.getBoardNo() %>" name="boardNo">
                 <div>
                     <label>말머리</label><br>
                     <select name="subject" id="subject" style="width: 100px; " required>
@@ -109,11 +129,11 @@
                 </div>
                 <div id="title">
                     <label>제목</label><br>
-                    <input type="text" name="title" placeholder=" 제목을 입력해주세요" required>
+                    <input type="text" name="title" placeholder=" 제목을 입력해주세요" value="<%= b.getBoardTitle() %>" required>
                 </div>
                 <div id="content">
                     <label>본문</label><br>
-                    <textarea name="content" style="resize: none; width: 89%; height: 300px; padding: 10px;" placeholder="내용을 입력해주세요" required></textarea>
+                    <textarea name="content" style="resize: none; width: 89%; height: 300px; padding: 10px;" placeholder="내용을 입력해주세요" required><%= b.getBoardContent() %></textarea>
                 </div>
                 <div id="tag">
                     <label>태그</label><br>
@@ -162,34 +182,58 @@
 
                 <div id="img-area">
                     <label>사진첨부</label><br>
-                    <img src=""id="contentImg1" height="135" width="150" onclick="chooseFile(1);">
-                    <img src="" id="contentImg2" height="135" width="150" onclick="chooseFile(2);">
-                    <img src="" id="contentImg3" height="135" width="150" onclick="chooseFile(3);">
+                   		<%for(int j=0; j<list.size(); j++){ %>
+                            <div class="img-div">
+                                <img class="test" src="<%=contextPath %>/<%=list.get(j).getFilePath() %>/<%=list.get(j).getChangeName() %>" id="contentImg<%=j+1 %>" height="135" width="150" onclick="chooseFile(<%= j+1 %>);" >
+                                <button class="img-delete-btn" type="button" onclick="deleteImg(<%=j+1%>);">x</button>
+                                <input type="hidden" name="file<%=j+1 %>No" value="<%= list.get(j).getFileNo()%>">
+                            </div>
+                            <%} %>
+                   		<%for(int i = list.size()+1; i<=3; i++){ %>
+                   			<img src="" id="contentImg<%=i %>" height="135" width="150" onclick="chooseFile(<%= i %>);" >                   			
+                   		<%} %>
+                   		
                     <div style="display: none;">
-                        <input type="file" id="file1" name="file1" onchange="loadImg(this, 1);">
+                   		<input type="file" id="file1" name="file1" onchange="loadImg(this, 1);">
                         <input type="file" id="file2" name="file2" onchange="loadImg(this, 2);">
                         <input type="file" id="file3" name="file3" onchange="loadImg(this, 3);">
                     </div>
-
+					
+					<script>
+					$(function(){
+						console.dir($("#file1"));
+						console.dir($("#file2"));
+					})
+					</script>
+					
                 </div>
 
                 <div id="btn" align="center">
                     <button type="reset">취 소</button>
-                    <button type="submit" style="background-color: rgb(149, 193, 31); color: white;">등 록</button>
+                    <button type="submit" style="background-color: rgb(149, 193, 31); color: white;">수 정</button>
                 </div>
 
             </form>
             
             <script>
-                // 카테고리 불러오는 함수
+                let ch = "<%= b.getCategory()%>";
                	$(function(){
+               		
+	                // 카테고리 불러오는 함수
                		$.ajax({
                			url:"list.category",
                			success:function(list){
                				let result = "";
                				for(let i=0; i<list.length; i++){
-               					result += "<option value=" + list[i].categoryNo + ">"
-               							+ list[i].categoryName + "</option>"
+               					
+                                if(ch == list[i].categoryName){
+                                    result += "<option value=" + list[i].categoryNo + " selected>"
+                                            + list[i].categoryName + "</option>"    
+                                }else{
+                                    result += "<option value=" + list[i].categoryNo + ">"
+                                               + list[i].categoryName + "</option>"
+                                }
+                                
                				}
                				
                				$("#subject").html(result);
@@ -199,13 +243,23 @@
                				console.log("실패");
                			}
                		})
+               		
+               		
+               		
+               		
                	})
+                
+                
+                
                 
                 function chooseFile(num){
                     $("#file"+num).click();
                 }
 				
                 function loadImg(inputFile, num){
+						console.dir(inputFile);
+						console.log(inputFile.files);
+						console.log(inputFile.files[0]);
                 	
            			let a = "#contentImg" + num;
                 	if(inputFile.files.length == 1){
@@ -221,7 +275,13 @@
                 			$(a).attr("src", null);
                 	}
                 }
-                     
+                
+                
+                function deleteImg(num){
+                	
+                	let a = "#contentImg" + num;
+                	$(a).attr("src", null);
+                }     
              </script>
         </div>
     </div>

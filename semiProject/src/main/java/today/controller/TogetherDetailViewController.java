@@ -30,7 +30,7 @@ public class TogetherDetailViewController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String tno = "T" + request.getParameter("tno");
+		String tno = request.getParameter("tno");
 		
 		int result = new TodayService().increaseCount(tno);
 		

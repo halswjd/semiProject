@@ -155,6 +155,70 @@ private Properties prop = new Properties();
 		return result;
 	}
 
+	
+	public int deleteTogether(Connection conn, String tno) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("deleteTogether");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, tno);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int enrollTogether(Connection conn, int uno, String tno){
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("enrollTogether");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, tno);
+			pstmt.setInt(2, uno);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int togetherCount(Connection conn, String tno) {
+		
+		int result = 0;
+		PreparedStatement pstmt= null;
+		String sql = prop.getProperty("togetherCount");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, tno);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
 }
 
 

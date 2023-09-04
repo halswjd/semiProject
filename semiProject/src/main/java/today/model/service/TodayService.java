@@ -60,8 +60,48 @@ public class TodayService {
 			rollback(conn);
 		}
 		
+		close(conn);
+		
 		return result;
 		
 	}
 	
+	public int deleteTogether(String tno) {
+		
+		Connection conn = getConnection();
+		
+		int result = new TodayDao().deleteTogether(conn, tno);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result;
+	
+	}
+	
+	public int enrollTogether(int uno, String tno) {
+		
+		Connection conn = getConnection();
+		
+		int result1 = new TodayDao().enrollTogether(conn, uno, tno);
+		int result2 = 0;
+		if(result1 > 0) {
+			result2 = new TodayDao().togetherCount(conn, tno);
+		}
+		
+		if(result1 > 0 && result2 > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result1 * result2;
+	}
 }

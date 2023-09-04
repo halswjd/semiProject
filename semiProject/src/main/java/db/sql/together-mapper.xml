@@ -9,7 +9,7 @@
 </entry>
 <entry key="selectList">
 	SELECT
-	        SUBSTR(TODAY_NO,2) "TODAY_NO"
+	        TODAY_NO
 	      , TODAY_TITLE
           , TODAY_NAME
           , TODAY_TIME
@@ -47,10 +47,8 @@
 	        ) AS "REPLY_COUNT"
 	  FROM TODAY T
 	  JOIN MEMBER ON (TODAY_WRITER = USER_NO)
-	   AND T.STATUS = 'Y'
-       AND TODAY_NO = ?
-	 ORDER
-	    BY TODAY_NO DESC
+      WHERE TODAY_NO = ?
+	    AND T.STATUS = 'Y'
 </entry>
 <entry key="insertTogether">
 	INSERT INTO TODAY
@@ -80,6 +78,24 @@
 	, ?
 	, ?
 	, 2
+	)
+</entry>
+<entry key="deleteTogether">
+	UPDATE TODAY
+	   SET STATUS = 'N'
+	 WHERE TODAY_NO = ?
+</entry>
+<entry key="togetherCount">
+	UPDATE TODAY
+	   SET MEM_COUNT = MEM_COUNT +1
+	 WHERE TODAY_NO = ?
+</entry>
+<entry key="enrollTogether">
+	INSERT INTO TOGETHER
+	VALUES
+	(
+	  ?
+	, ?
 	)
 </entry>
 </properties>

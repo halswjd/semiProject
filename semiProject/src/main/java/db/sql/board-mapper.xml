@@ -80,7 +80,7 @@
 	      , BOARD_TITLE
 	      , NICKNAME
 	      , COUNT
-	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD') AS "CREATE_DATE"
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') AS "CREATE_DATE"
 	      , (
 	          SELECT COUNT(*)
 	            FROM REPLY
@@ -241,8 +241,50 @@
 	  )
 </entry>
 <entry key="boardImgList">
-	SELECT FILE_PATH
+	SELECT FILE_NO, FILE_PATH, ORIGIN_NAME, CHANGE_NAME
 	  FROM ATTACHMENT
 	 WHERE REF_NO = ?
 </entry>
+<entry key="boardUpdate">
+	UPDATE BOARD
+	   SET BOARD_TITLE = ?
+	     , BOARD_CONTENT = ?
+	     , HASHTAG = ?
+	     , CATEGORY_NO = ?
+	     , CREATE_DATE = SYSDATE
+	 WHERE BOARD_NO = 'B' || ?   
+</entry>
+<entry key="deleteAttachment">
+	DELETE ATTACHMENT
+	 WHERE FILE_NO = ?
+</entry>
+<entry key="updateAttachment">
+	UPDATE ATTACHMENT
+	   SET ORIGIN_NAME = ?
+	     , CHANGE_NAME = ?
+	     , FILE_PATH = ?
+	 WHERE FILE_NO = ?
+</entry>
+<entry key="insertNewAttachmentList">
+	INSERT
+	  INTO ATTACHMENT
+	  (
+	    FILE_NO
+	  , REF_NO
+	  , ORIGIN_NAME
+	  , CHANGE_NAME
+	  , FILE_PATH
+	  , FILE_LEVEL
+	  )
+	  VALUES
+	  (
+	    SEQ_FNO.NEXTVAL
+	  , 'B' || ?
+	  , ?
+	  , ?
+	  , ?
+	  , 2
+	  )
+</entry>
+
 </properties>

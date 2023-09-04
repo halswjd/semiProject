@@ -23,6 +23,7 @@ public class Today {
    private int memCount;
    private int replyCount;
    private int userNo;
+   private String member;
    
    
    public Today() {}

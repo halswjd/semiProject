@@ -282,14 +282,46 @@ public class BoardService {
 			rollback(conn);
 		}
 		
+		close(conn);
+		
 		return result1 * result2;
 	}
 	
-	public String[] boardImgList(String boardNo) {
+	public ArrayList<Attachment> boardImgList(String boardNo) {
 		
 		Connection conn = getConnection();
 		
-		String[] filePath = new BoardDao().boardImgList(conn, boardNo);
+		ArrayList<Attachment> list = new BoardDao().boardImgList(conn, boardNo);
 		
+		close(conn);
+		
+		return list;
+	}
+	
+	public int updateBoard(Board b, ArrayList<Attachment> list, ArrayList<Integer> deleteList) {
+		
+		Connection conn = getConnection();
+		
+		int result1 = new BoardDao().updateBoard(conn, b);
+		
+		int result2 = 1;
+		int result3 = 1;
+		
+		if(list.size() != 0) {
+			result2 = new BoardDao().insertNewAttachment(conn, list);
+		}
+		if(deleteList.size() != 0) {
+			result3 = new BoardDao().deleteAttachment(conn, deleteList);			
+		}
+		
+		if(result1 > 0 && result2 > 0 && result3 > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result1*result2;
 	}
 }

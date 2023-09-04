@@ -70,7 +70,7 @@
         	<input type="hidden" name="userNo" value="<%= loginMember.getUserNo() %>">
             <br>
             <div id="write2">
-                <label id="ff4">제목</label><br><input type="text" name="title" style="width: 650px; margin: 5px 0 0 0;" required>
+                <label id="ff4">제목</label><br><input type="text" name="title" style="width: 650px; margin: 5px 0 0 0;" maxlength="18" required>
             </div>
             <br>
             <div id="write3">
@@ -127,8 +127,8 @@
                             <label for="car">자차</label><br>
                             <input type="radio" name="transport" id="traffic" style="width: 17px; height: 17px; margin: 0 5px 0 0;" value="대중교통">
                             <label for="traffic">대중교통</label><br>
-                            <input type="radio" name="transport" id="traffic" style="width: 17px; height: 17px; margin: 0 5px 0 0;" value="버스대절">
-                            <label for="traffic">버스대절</label><br>
+                            <input type="radio" name="transport" id="bus" style="width: 17px; height: 17px; margin: 0 5px 0 0;" value="버스대절">
+                            <label for="bus">버스대절</label><br>
                             <input type="radio" name="transport" id="etc" style="width: 17px; height: 17px; margin: 0 5px 0 0;" value="기타">
                             <label for="etc">기타</label><br>                            
                         </div>
@@ -155,6 +155,10 @@
 
             $("#courseInput").keydown(function(){
                 $("#none").prop("checked", false);
+            })
+
+            $(function(){
+                $("#none").prop("checked", true);
             })
         </script>
     </div>

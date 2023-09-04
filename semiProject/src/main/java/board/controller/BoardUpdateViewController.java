@@ -9,22 +9,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
 import board.model.service.BoardService;
 import board.model.vo.Attachment;
+import board.model.vo.Board;
 
 /**
- * Servlet implementation class BoardImgListController
+ * Servlet implementation class BoardUpdateController
  */
-@WebServlet("/list.img")
-public class BoardImgListController extends HttpServlet {
+@WebServlet("/updateView.bo")
+public class BoardUpdateViewController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardImgListController() {
+    public BoardUpdateViewController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -34,14 +33,17 @@ public class BoardImgListController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String boardNo = request.getParameter("boardNo");
+		int boardNo = Integer.parseInt(request.getParameter("bno"));
 		
-		ArrayList<Attachment> list = new BoardService().boardImgList(boardNo);
+		Board b = new BoardService().selectBoard(boardNo);
+		ArrayList<Attachment> list = new BoardService().boardImgList("B"+boardNo);
 		
-		response.setContentType("application/json; charset=utf-8");
+		System.out.println("이미지크기 : " + list.size());
 		
-		new Gson().toJson(list,response.getWriter());
+		request.setAttribute("b", b);
+		request.setAttribute("list", list);
 		
+		request.getRequestDispatcher("views/board/boardUpdateForm.jsp").forward(request, response);;
 		
 	}
 

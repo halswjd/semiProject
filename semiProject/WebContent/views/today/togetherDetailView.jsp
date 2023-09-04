@@ -121,6 +121,19 @@
             font-weight: bolder;
             cursor: pointer;
         }
+
+        #enroll-btn{
+            width: 90%;
+            height: 50px;
+            margin-top: 10px;
+            border: none;
+            background-color: rgb(149, 193, 31);
+            color: white;
+            border-radius: 7px;
+            font-size: 18px;
+            font-weight: 200;
+            letter-spacing: 20px;
+        }
     </style>
 </head>
 <body>
@@ -170,10 +183,13 @@
                         <% if(t.getLev().equals("제한없음")){ %>
                         <td><%= t.getLev() %></td>
                         <%}else{ %>
-                        <td><%= t.getLev() %>명</td>
+                        <td><%= t.getMemCount() %>/<%= t.getLev() %>명</td>
                         <%} %>
                     </tr>
                 </table>
+                <% if(loginMember != null && t.getMemCount() < Integer.parseInt(t.getLev())){ %>
+                <button id="enroll-btn" onclick="enrollMember();">신청하기</button>
+                <%} %>
             </div>
                 <%if(loginMember == null){ %>
                     <div id="bar" align="right"></div>
@@ -187,7 +203,7 @@
                 </div>
                 <%} %>
             <div id="comment">
-                <b>댓글 <%= t.getReplyCount() %></b>
+                <b>댓글 <span id="countReply">보기와 작성은 등산 신청 후 가능합니다</span></b>
                 <div id="comment-area2">
                     <form action="">
                         <textarea name="comment" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요"></textarea>
@@ -253,7 +269,7 @@
 	    
 	    $(function(){
 
-            	
+            	// 북마크 체크 함수
 	            $.ajax({
 	                url:"bookCheck.bo",
 	                data:{boardNo:bno, userNo:userNo},
@@ -271,9 +287,33 @@
 	                    console.log("실패");
 	                }
 	            })
+	            
             
 	    })
 	    <%} %>
+	    
+	    // 게시글 삭제 함수
+        function deleteBoard(){
+        	
+        	if(confirm("해당 게시글을 삭제하시겠습니까?")){
+	        	location.href = "<%= contextPath %>/delete.tg?tno=" + bno;
+        	}
+        	
+        }
+	    
+	    // 모임 신청하기 버튼
+	    function enrollMember(){
+	    	
+	    	if(confirm("해당 모임에 신청하시겠습니까?")){
+	    		location.href = "<%= contextPath %>/enroll.tg?tno=" + bno + "&uno=" + userNo;
+	    		
+	    	}
+	    	
+	    }
+	    
+	    
+	   
+	    
     </script>
     
     <div class="modal" id="reportBoard">
