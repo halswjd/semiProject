@@ -7,6 +7,15 @@
     
 <%
 	Board b = (Board)request.getAttribute("b");
+    // 글번호, 글제목, 글내용, 해시태그, 조회수, 닉네임, 말머리, 작성일자, 댓글수, 작성자유저번호
+
+    String[] hashtagList = new String[20];
+	
+	if(b.getHashtag() != null){
+	String hashtag = b.getHashtag().trim().replaceAll(" ", "");
+	hashtagList = hashtag.split(",");				
+	}
+
 	ArrayList<Attachment> list = (ArrayList<Attachment>)request.getAttribute("list");
 %>
 <!DOCTYPE html>
@@ -141,9 +150,15 @@
                 </div>
                 <div id="hashtag">
                     <!-- <div class="inHashtag"></div> -->
+                    <% if(hashtagList != null){%>
+                        <% for(String s:hashtagList){%>
+                            <div class='inHashtag'># <%= s%></div>
+                        <%} %>
                 </div>
+                    <button type="button" id="hashtagDelete" onclick="hashtagReset();" style="display:"";">지우기</button>
+                    <%}%>
                 <button type="button" id="hashtagDelete" onclick="hashtagReset();" style="display: none;">지우기</button>
-                <input type="hidden" name="hashtagArr" id="result">
+                <input type="hidden" name="hashtagArr" id="result" value="<%= b.getHashtag()%>">
                 
                 <script>
                 

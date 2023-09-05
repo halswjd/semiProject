@@ -3,6 +3,8 @@ package today.model.service;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+import board.model.dao.BoardDao;
+
 import static common.JDBCTemplate.*;
 
 import today.model.dao.TodayDao;
@@ -89,7 +91,7 @@ public class TodayService {
 		Connection conn = getConnection();
 		
 		int result1 = new TodayDao().enrollTogether(conn, uno, tno);
-		int result2 = 0;
+		int result2 = 1;
 		if(result1 > 0) {
 			result2 = new TodayDao().togetherCount(conn, tno);
 		}
@@ -104,4 +106,16 @@ public class TodayService {
 		
 		return result1 * result2;
 	}
+	
+	public ArrayList<Integer> togetherMemList(String boardNo){
+		
+		Connection conn = getConnection();
+		
+		ArrayList<Integer> list = new TodayDao().togetherMemList(conn, boardNo);
+		
+		close(conn);
+		
+		return list;
+	}
 }
+

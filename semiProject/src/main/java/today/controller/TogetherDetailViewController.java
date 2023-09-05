@@ -1,6 +1,8 @@
 package today.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,10 +35,16 @@ public class TogetherDetailViewController extends HttpServlet {
 		String tno = request.getParameter("tno");
 		
 		int result = new TodayService().increaseCount(tno);
+			
 		
 		if(result > 0) {
 			Today t = new TodayService().selectTogether(tno);
+			ArrayList<Integer> list = new TodayService().togetherMemList(tno);
+			
 			request.setAttribute("t", t);
+			request.setAttribute("list", list);
+			
+
 			request.getRequestDispatcher("views/today/togetherDetailView.jsp").forward(request, response);;
 			
 		}else {

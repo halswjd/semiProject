@@ -1,9 +1,13 @@
+<%@page import="java.util.ArrayList"%>
 <%@page import="today.model.vo.Today"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
 	Today t = (Today)request.getAttribute("t");
 	// 게시글번호(T1), 제목, 내용, 닉네임, 유저번호, 산이름, 작성일자, 교통수단, 코스, 모집인원수(lev), mem_count, 시간, 등산일자, 댓글수
+	
+	ArrayList<Integer> list = (ArrayList<Integer>)request.getAttribute("list");
+	// 해당 게시글에 가입한 멤버의 리스트
 %>
 <!DOCTYPE html>
 <html>
@@ -181,14 +185,14 @@
                         <th>🙋‍♂️</th>
                         <th>명수</th>
                         <% if(t.getLev().equals("제한없음")){ %>
-                        <td><%= t.getLev() %></td>
+                        	<td><%= t.getLev() %></td>
                         <%}else{ %>
-                        <td><%= t.getMemCount() %>/<%= t.getLev() %>명</td>
+                        	<td><%= t.getMemCount() %>/<%= t.getLev() %>명</td>
                         <%} %>
                     </tr>
                 </table>
                 <% if(loginMember != null && t.getMemCount() < Integer.parseInt(t.getLev())){ %>
-                <button id="enroll-btn" onclick="enrollMember();">신청하기</button>
+                	<button id="enroll-btn" onclick="enrollMember();">신청하기</button>
                 <%} %>
             </div>
                 <%if(loginMember == null){ %>
@@ -288,6 +292,9 @@
 	                }
 	            })
 	            
+		    // 모임 가입 여부 함수
+		    
+	            
             
 	    })
 	    <%} %>
@@ -310,6 +317,8 @@
 	    	}
 	    	
 	    }
+	    
+	    
 	    
 	    
 	   

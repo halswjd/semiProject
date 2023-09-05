@@ -219,6 +219,34 @@ private Properties prop = new Properties();
 		
 		return result;
 	}
+	
+	public ArrayList<Integer> togetherMemList(Connection conn, String boardNo){
+		
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("togetherMemList");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, boardNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				list.add(rset.getInt("mem_no"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return list;
+		
+	}
 }
 
 
