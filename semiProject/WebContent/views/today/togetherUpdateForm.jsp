@@ -1,5 +1,14 @@
+<%@page import="today.model.vo.Today"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%
+	Today t = (Today)request.getAttribute("t");
+	//게시글번호(T1), 제목, 내용, 닉네임, 유저번호, 산이름, 작성일자, 교통수단, 코스, 모집인원수(lev), mem_count, 시간, 등산일자, 댓글수
+	
+	String ampm = t.getTodayTime().substring(0, 2);
+	int time = Integer.parseInt(t.getTodayTime().substring(3));
+	String date = "20" + t.getTodayDate().substring(0,2) + "-" + t.getTodayDate().substring(3,5) + "-" + t.getTodayDate().substring(6); 
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -66,15 +75,16 @@
     <%@ include file="../common/menubar.jsp" %>
     <div id="write">
     	 <h1 align="center" id="ttl">같이 등산행 작성</h1>
-        <form action="<%= contextPath %>/insert.tg" method="post">
+        <form action="<%= contextPath %>/update.tg" method="post">
         	<input type="hidden" name="userNo" value="<%= loginMember.getUserNo() %>">
+        	<input type="hidden" name="boardNo" value="<%= t.getTodayNo() %>">
             <br>
             <div id="write2">
-                <label id="ff4">제목</label><br><input type="text" name="title" style="width: 650px; margin: 5px 0 0 0;" maxlength="18" required>
+                <label id="ff4">제목</label><br><input type="text" name="title" style="width: 650px; margin: 5px 0 0 0;" maxlength="18" value="<%= t.getTodayTitle() %>" required>
             </div>
             <br>
             <div id="write3">
-                <label id="ff4">내용</label><br><textarea name="content" cols="71" rows="8" style="resize: none;" required></textarea>
+                <label id="ff4">내용</label><br><textarea name="content" cols="71" rows="8" style="resize: none;" required><%= t.getTodayContent() %></textarea>
                 <br>
             </div>
             <br>
@@ -95,28 +105,33 @@
             <div id="write5">
                 <hr>
                 <span id="ff4">🌄 산 이름</span>
-                <br><input type="text" name="mountain" style="width: 650px; margin: 5px 0 0 0;" placeholder="ex) 관악산" required>
+                <br><input type="text" name="mountain" style="width: 650px; margin: 5px 0 0 0;" placeholder="ex) 관악산" value="<%= t.getTodayName() %>" required>
             </div>
             <br>
             <div id="write7">
                 <hr>
                 <span id="ff4">📅 등산일자</span><br>
-                <input type="date" name="date" id="dateIn" required>
+                <input type="date" name="date" id="dateIn" value="<%=date %>"  required>
                 <hr>
             </div>
                 <div id="write8">
                     <span id="ff4">🕒 시간</span><br><br>
                     <input type="radio" name="ampm" id="time1" value="오전" required><label for="time1">오전</label><br>
                     <input type="radio" name="ampm" id="time2" value = "오후"><label for="time2">오후</label>
-                    <br><input type="number" name="time" min="1" max="12" required> 시<br><br>
+                    <br><input type="number" name="time" min="1" max="12" value="<%= time %>" required> 시<br><br>
                     <hr>
                  
                 </div>
     
                 <div id="write9">
                     <span id="ff4">📍 루트</span><br><br>
-                    <input type="radio" name="course" id="none" value="미정"><label for="none"> 미정</label>
+                    <%if(t.getTodayCourse().equals("미정")){ %>
+                    <input type="radio" name="course" id="none" value="미정" checked><label for="none"> 미정</label>
                     <input type="text" name="course" id="courseInput" style="width: 650px; margin: 5px 0 0 0;" placeholder="ex) ㅇㅇㅇ코스 OR 지점1 > 지점2 > ..."><br><br>
+                    <%}else{ %>
+                    <input type="radio" name="course" id="none" value="미정" required><label for="none"> 미정</label>
+                    <input type="text" name="course" id="courseInput" style="width: 650px; margin: 5px 0 0 0;" value="<%= t.getTodayCourse() %>" placeholder="ex) ㅇㅇㅇ코스 OR 지점1 > 지점2 > ..."><br><br>
+                    <%} %>
                     <hr>
                 </div>
     
@@ -136,7 +151,7 @@
             <br>
             <div align="right" id="write12">
                 <button type="reset" class="btn btn-light" id="ff4">취소</button>
-                <button type="submit" class="btn btn-primary" id="ff4">등록</button>
+                <button type="submit" class="btn btn-primary" id="ff4">수정</button>
             </div>
             
             <div id="topbtn">
@@ -156,10 +171,47 @@
             $("#courseInput").keydown(function(){
                 $("#none").prop("checked", false);
             })
-
+		
+            
             $(function(){
-                $("#none").prop("checked", true);
+            	
+	            // 모집인원
+            	let mem = <%= t.getLev()%>;
+            	
+            	$("select[name=people] option").each(function(){
+            		if($(this).val() == mem){
+            			$(this).attr("selected",true);
+            		}
+        		})
+        		
+        		// 오전 오후
+        		let ampm = "<%=ampm%>";
+        		
+        		$("input[name=ampm]").each(function(){
+        			if($(this).val() == ampm){
+        				$(this).attr("checked", true);
+        			}
+        		})
+        		
+				// 교통수단
+				let transport = "<%= t.getTodayVehicle()%>";
+				$("input[name=transport]").each(function(){
+					if($(this).val() == transport){
+						$(this).attr("checked", true);
+					}
+				})
+				
+				// 
+				let count =  <%= t.getMemCount()%>;
+				$("select[name=people]").change(function(){
+					if($(this).val() < count){
+						alert("현재 " + count + "명이 모임에 가입되어있습니다. 다시 선택해주세요.");
+					}
+				})
+        		
             })
+            
+            
         </script>
     </div>
 </body>

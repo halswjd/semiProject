@@ -268,6 +268,79 @@ private Properties prop = new Properties();
 		}
 		return result;
 	}
+	
+	public int togetherDropOut(Connection conn, int uno, String tno) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("togetherDropOut");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, uno);
+			pstmt.setString(2, tno);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int countDecrease(Connection conn, String tno) {
+		
+		int result = 0;
+		PreparedStatement pstmt= null;
+		String sql = prop.getProperty("countDecrease");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, tno);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int updateTogether(Connection conn, Today t) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("updateTogether");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, t.getTodayTitle());
+			pstmt.setString(2, t.getTodayContent());
+			pstmt.setString(3, t.getTodayName());
+			pstmt.setString(4, t.getTodayDate());
+			pstmt.setString(5, t.getTodayTime());
+			pstmt.setString(6, t.getTodayCourse());
+			pstmt.setString(7, t.getLev());
+			pstmt.setString(8, t.getTodayVehicle());
+			pstmt.setString(9, t.getTodayNo());
+			
+			result = pstmt.executeUpdate();
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
 }
 
 

@@ -214,6 +214,7 @@ button>img {
 							<option value="1">제목+내용</option>
 							<option value="2">글제목</option>
 							<option value="3">글쓴이</option>
+							<option value="4">해시태그</option>
 						</select>
 
 						<div id="box-search">
@@ -258,7 +259,6 @@ button>img {
 						</tr>
 					</thead>
 					<tbody>
-						
 						<tr align="center">
 							<td width="80" style="color: gray;">글번호</td>
 							<td width="60">[카테고리]</td>
@@ -271,6 +271,7 @@ button>img {
 						</tr>
 
 					</tbody>
+					<tfoot></tfoot>
 				</table>
 			</div>
 
@@ -541,13 +542,20 @@ button>img {
 				data:{option:searchOpt, keyword:search},
 				success:function(list){
 					listCount = list.length;
-					dataList = list;
-					$("#box-search input[type=text]").val("");
 					
-					// 글 목록 불러오기 호출
-					displayData(1, boardLimit);
-					// 페이징 표시 호출
-					paging(listCount, boardLimit, pageLimit, 1);
+					if(listCount == 0){
+						$(".list-area").children("tbody").html("");
+						$(".list-area").children("tfoot").html("<tr align='center';><td colspan='7'>검색된 결과가 없습니다.</td></tr>");
+					}else{
+						dataList = list;
+						$("#box-search input[type=text]").val("");
+						
+						// 글 목록 불러오기 호출
+						displayData(1, boardLimit);
+						// 페이징 표시 호출
+						paging(listCount, boardLimit, pageLimit, 1);
+						
+					}
 				},
 				error:function(){
 					console.log("검색 조회 ajax 실패");

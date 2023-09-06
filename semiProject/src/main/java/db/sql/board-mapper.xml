@@ -376,6 +376,35 @@
 	 ORDER
 	    BY BOARD_NO DESC
 </entry>
+<entry key="searchHashtag">
+	SELECT
+	        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
+	      , CATEGORY_NAME
+	      , BOARD_TITLE
+	      , NICKNAME
+	      , COUNT
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
+	      , USER_NO
+	      , (
+	          SELECT COUNT(*)
+	            FROM REPLY
+	           WHERE REF_BNO = B.BOARD_NO
+	             AND STATUS = 'Y'
+	       ) AS "REPLY_COUNT"
+	       , (
+	         SELECT COUNT(*)
+	           FROM LIKES L
+	         WHERE L.BOARD_NO = B.BOARD_NO
+	       ) AS "LIKE_COUNT"
+	  FROM BOARD B
+	  JOIN CATEGORY USING (CATEGORY_NO)
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE BOARD_TYPE = 1
+	   AND B.STATUS = 'Y'
+       AND HASHTAG LIKE '%'|| ? || '%'
+	 ORDER
+	    BY BOARD_NO DESC
+</entry>
 <entry key="countLike">
 	SELECT COUNT(*) "COUNT"
 	  FROM LIKES

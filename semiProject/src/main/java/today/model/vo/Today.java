@@ -144,6 +144,8 @@ public Today(String todayTitle, String todayContent, String todayName, String to
 	this.todayVehicle = todayVehicle;
 	this.todayWriter = todayWriter;
 }
+	
+	
 
 public String getTodayNo() {
       return todayNo;

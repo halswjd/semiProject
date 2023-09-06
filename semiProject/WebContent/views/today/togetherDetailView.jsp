@@ -202,7 +202,7 @@
                         <th>🙋‍♂️</th>
                         <th>명수</th>
                         <% if(Integer.parseInt(t.getLev()) == 100){ %>
-                        	<td>제한없음</td>
+                        	<td><%= t.getMemCount() %>명/제한없음</td>
                         <%}else{ %>
                         	<td><%= t.getMemCount() %>/<%= t.getLev() %>명</td>
                         <%} %>
@@ -210,14 +210,14 @@
                 </table>
                 <% if(loginMember != null && t.getMemCount() < Integer.parseInt(t.getLev()) && result!=1 && t.getUserNo() != loginMember.getUserNo()){ %>
                 	<button id="enroll-btn" onclick="enrollMember();">신청하기</button>
-                <%}else if(result == 1){ %>
-                	<button id="enroll-btn" style="background-color:gray;" disabled>신청완료</button>
+                <%}else if(result == 1 && loginMember.getUserNo() != t.getUserNo()){ %>
+                	<button id="enroll-btn" style="background-color:gray;" onclick="dropOut();">신청취소</button>
                 <%} %>
             </div>
                 <%if(loginMember == null){ %>
                     <div id="bar" align="right"></div>
                 <%}else if(loginMember.getUserNo() == t.getUserNo() ){%>
-                    <div id="bar" align="right"><button style="color:tomato;" onclick="deleteBoard();">글 삭제</button></div>
+                    <div id="bar" align="right"><button style="color:tomato;" onclick="deleteBoard();">글 삭제</button><button style="color:rgb(58,58,58);" onclick="updateBoard();">글 수정</button></div>
                 <%}else{ %>
                 <div id="bar" align="right">
                     <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
@@ -394,9 +394,15 @@
 	    	
 	    	if(confirm("해당 모임에 신청하시겠습니까?")){
 	    		location.href = "<%= contextPath %>/enroll.tg?tno=" + bno + "&uno=" + userNo;
-	    		
 	    	}
+	    }
+	    
+	    // 모임 탈퇴
+ 		function dropOut(){
 	    	
+	    	if(confirm("해당 모임에 탈퇴하시겠습니까?")){
+	    		location.href = "<%= contextPath %>/dropOut.tg?tno=" + bno + "&uno=" + userNo;
+	    	}
 	    }
 	    
 	 // 댓글 작성 함수
@@ -441,7 +447,10 @@
      
         }
 	    
-	    
+        // 게시글 수정 함수
+        function updateBoard(){
+			location.href="<%= contextPath%>/updateView.tg?tno=<%= t.getTodayNo()%>";        	
+        }
 	   
 	    
     </script>

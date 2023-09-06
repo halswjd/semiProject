@@ -111,5 +111,26 @@
 	  FROM TOGETHER
 	 WHERE REF_NO = ?
 </entry>
-
+<entry key="togetherDropOut">
+	DELETE TOGETHER
+	 WHERE MEM_NO = ?
+	   AND REF_NO = ?
+</entry>
+<entry key="countDecrease">
+	UPDATE TODAY
+	   SET MEM_COUNT = MEM_COUNT - 1
+	 WHERE TODAY_NO = ?
+</entry>
+<entry key="updateTogether">
+	UPDATE TODAY
+	   SET TODAY_TITLE = ?
+	     , TODAY_CONTENT = ?
+	     , TODAY_NAME = ?
+	     , TODAY_DATE = ?
+	     , TODAY_TIME = ?
+	     , TODAY_COURSE = ?
+	     , LEV = ?
+	     , TODAY_VEHICLE = ?
+	 WHERE TODAY_NO = ?
+</entry>
 </properties>

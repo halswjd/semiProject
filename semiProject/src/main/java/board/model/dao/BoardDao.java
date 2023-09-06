@@ -747,6 +747,11 @@ public class BoardDao {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, keyword);
 			
+		}else if(option ==4) { // 해시태그
+			String sql = prop.getProperty("searchHashtag");
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, keyword);
 		}
 		
 		rset = pstmt.executeQuery();
