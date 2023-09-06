@@ -56,7 +56,7 @@ public class BoardReportController extends HttpServlet {
 		if(boardNo.charAt(0) == 'B') {
 			response.sendRedirect(request.getContextPath() + "/detail.bo?bno=" + boardNo.substring(1));			
 		}else if(boardNo.charAt(0) == 'T') {
-			response.sendRedirect(request.getContextPath() + "/detail.tg?tno=" + boardNo.substring(1));						
+			response.sendRedirect(request.getContextPath() + "/detail.tg?tno=" + boardNo);						
 		}
 	}
 

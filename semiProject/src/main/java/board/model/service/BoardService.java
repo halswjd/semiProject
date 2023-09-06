@@ -324,4 +324,49 @@ public class BoardService {
 		
 		return result1*result2;
 	}
+	
+	public int deleteAttachment(int fileNo) {
+		
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().deleteAttachment(conn, fileNo);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result; 
+	}
+	
+	public ArrayList<Board> searchBoard(int option, String keyword){
+		
+		Connection conn = getConnection();
+		
+		ArrayList<Board> list = new BoardDao().searchBoard(conn, option, keyword);
+		
+		close(conn);
+		
+		return list;
+		
+	}
+	
+	public int countLike(String boardNo) {
+		
+		Connection conn = getConnection();
+		
+		int count = new BoardDao().countLike(conn, boardNo);
+		
+		close(conn);
+		
+		return count;
+	}
 }
+
+
+
+
+

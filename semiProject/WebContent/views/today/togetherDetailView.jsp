@@ -8,6 +8,9 @@
 	
 	ArrayList<Integer> list = (ArrayList<Integer>)request.getAttribute("list");
 	// 해당 게시글에 가입한 멤버의 리스트
+	
+	int result = 0;
+
 %>
 <!DOCTYPE html>
 <html>
@@ -77,8 +80,9 @@
         #content>table>tr{border-bottom: 1px solid lightgray;}
 
         #h_etc>span, #bar>span, #cmt_etc>span{margin-right: 10px;}
-        #comment{
+       #comment{
             padding: 20px;
+          
         }
         
         .comment-area1{
@@ -95,8 +99,8 @@
             border: 1px solid gray;
             border-radius: 5px;
             padding: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            margin-bottom: 30px;
         }
         #cmt_btn{
             padding-right: 10px;
@@ -107,12 +111,6 @@
             height: 30px;
             font-family: 'NanumBarunGothic';
         }
-        .cmt_delete{
-            margin-top: 7px;
-            color: tomato;
-            font-size: 13px;
-        }
-        #comment b{font-size: 15px;}
 
 		#bar>button{
             border: none;
@@ -138,10 +136,29 @@
             font-weight: 200;
             letter-spacing: 20px;
         }
+        
+        .deleteReply-btn{
+            margin: 0;
+            color: tomato;
+            margin-top: 3px;
+            margin-left:3px;
+            cursor: pointer;
+            font-size:13px;
+        }
     </style>
 </head>
 <body>
 	<%@ include file="../common/menubar.jsp" %>
+	<%
+		if(loginMember != null && list != null){
+			for(int memNo : list){
+				if(loginMember.getUserNo() == memNo){
+					result = 1;
+				}
+			}
+			
+		}
+	%>
     <div class="outer">
         <div class="wrap">
             <div id="header">
@@ -184,15 +201,17 @@
                     <tr>
                         <th>🙋‍♂️</th>
                         <th>명수</th>
-                        <% if(t.getLev().equals("제한없음")){ %>
-                        	<td><%= t.getLev() %></td>
+                        <% if(Integer.parseInt(t.getLev()) == 100){ %>
+                        	<td>제한없음</td>
                         <%}else{ %>
                         	<td><%= t.getMemCount() %>/<%= t.getLev() %>명</td>
                         <%} %>
                     </tr>
                 </table>
-                <% if(loginMember != null && t.getMemCount() < Integer.parseInt(t.getLev())){ %>
+                <% if(loginMember != null && t.getMemCount() < Integer.parseInt(t.getLev()) && result!=1 && t.getUserNo() != loginMember.getUserNo()){ %>
                 	<button id="enroll-btn" onclick="enrollMember();">신청하기</button>
+                <%}else if(result == 1){ %>
+                	<button id="enroll-btn" style="background-color:gray;" disabled>신청완료</button>
                 <%} %>
             </div>
                 <%if(loginMember == null){ %>
@@ -207,23 +226,26 @@
                 </div>
                 <%} %>
             <div id="comment">
-                <b>댓글 <span id="countReply">보기와 작성은 등산 신청 후 가능합니다</span></b>
+                <b>댓글 <span id="countReply">보기와 작성은 모임 신청 후 가능합니다</span></b>
                 <div id="comment-area2">
-                    <form action="">
-                        <textarea name="comment" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요"></textarea>
+                    <form action="<%= contextPath %>/insertReply.bo" method="post">
+                    </form>
+                        <textarea id="rContent" style="resize: none; border: none; width: 95%; height: 50px;" placeholder="댓글을 입력하세요" required></textarea>
                         <div id="cmt_btn" align="right">
                             <button type="reset">취소</button>
-                            <button type="submit">등록</button>
+                            <%if(loginMember != null && result==1){ %>
+                            <input name="userNo" type="hidden" value="<%= loginMember.getUserNo()%>">
+                            <button type="button" onclick="insertReply();">등록</button>
+                            <%}else{ %>
+                            <button type="submit" disabled>등록</button>
+                            <%} %>
                         </div>
-                    </form>
                 </div>
-                <div class="comment-area1">
-                    <div class="cmt_id">김뫄뫄</div>
-                    <div class="cmt_txt">너무 피곤해유</div>
-                    <div class="cmt_etc">7시간전</div>
-                    <div class="cmt_delete">삭제</div>
+                <div id="comment-list">
+                    
+                    
                 </div>
-                <!-- 비회원은 disabled -->
+                
             </div>
         </div>
     </div>
@@ -239,7 +261,6 @@
 	            url:"book.bo",
 	            data:{boardNo:bno, userNo:userNo},
 	            success:function(result){
-	                console.log("성공")
 	                if(result == 'Y'){
 	                	$("#bookmark1").css("display", "none");
 	                    $("#bookmark2").css("display", "");
@@ -258,7 +279,6 @@
 	            url:"deleteBook.bo",
 	            data:{boardNo:bno, userNo:userNo},
 	            success:function(result){
-	                console.log("성공")
 	                if(result == 'Y'){
 	                	$("#bookmark1").css("display", "");
 	                    $("#bookmark2").css("display", "none");
@@ -272,31 +292,92 @@
 	    }
 	    
 	    $(function(){
-
-            	// 북마크 체크 함수
-	            $.ajax({
-	                url:"bookCheck.bo",
-	                data:{boardNo:bno, userNo:userNo},
-	                success:function(result){
-	                    console.log("성공");
-	                    if(result == 'Y'){
-	                    	$("#bookmark2").css("display", "");
-	                        $("#bookmark1").css("display", "none");
-	                    }else{
-	                    	$("#bookmark2").css("display", "none");
-	                        $("#bookmark1").css("display", "");                    	
-	                    }
-	                },
-	                error:function(result){
-	                    console.log("실패");
-	                }
-	            })
+			if(<%= result%> == 1){
+		    	selectReplyList();
+		    	
+		    	setInterval(selectReplyList, 1000);
+				
+			}
+	    	
+            // 북마크 체크 함수
+            $.ajax({
+                url:"bookCheck.bo",
+                data:{boardNo:bno, userNo:userNo},
+                success:function(result){
+                    if(result == 'Y'){
+                    	$("#bookmark2").css("display", "");
+                        $("#bookmark1").css("display", "none");
+                    }else{
+                    	$("#bookmark2").css("display", "none");
+                        $("#bookmark1").css("display", "");                    	
+                    }
+                },
+                error:function(result){
+                    console.log("실패");
+                }
+            })
 	            
-		    // 모임 가입 여부 함수
 		    
 	            
             
 	    })
+	    
+	    function selectReplyList(){
+	    	
+	    	// 오늘날짜
+			let today = new Date();
+			let year = today.getFullYear();
+			let month = ('0' + (today.getMonth() + 1)).slice(-2);
+			let day = ('0' + today.getDate()).slice(-2);			
+			let dateString = year + '/' + month  + '/' + day;
+	    	
+	    	// 댓글 리스트
+            let charHtml = "";
+            
+            $.ajax({
+            	url:"replyList.bo",
+            	data:{boardNo:bno},
+            	success:function(list){
+            		for(let i=0; i<list.length; i++){
+            			charHtml += "<div class='comment-area1'>"
+          				  + "<span class='cmt_id'>" + list[i].replyWriter + "</span>";
+          			 if('20' + list[i].createDate.substr(0,8) == dateString){
+          		charHtml += "<span class='cmt_etc'>" + list[i].createDate.substr(9);
+          			 }else{
+          		charHtml += "<span class='cmt_etc'>" + list[i].createDate;		 
+          			 }
+          		charHtml += "</span><div class='cmt_txt'>" + list[i].replyContent + "</div>";
+      				  if(userNo == list[i].userNo){
+          				  charHtml += "<p class='deleteReply-btn' onclick='deleteReply($(this));'>삭제</p>"
+          				  		   + "<input type='hidden' value='" + list[i].replyNo + "'>"
+          					 	   + "</div></div>"; 
+      				  }else{
+      					  charHtml += "</div>";
+      				  }
+	            				  
+            		}
+            		
+            		$("#comment-list").html(charHtml);
+            		
+            	},
+            	error:function(){
+            		console.log("댓글 불러오기 실패");
+            	}
+            	
+            })
+            
+            // 댓글 갯수
+            $.ajax({
+            	url:"countReply.bo",
+            	data:{boardNo:bno},
+            	success:function(result){
+            		$("#countReply").text(result);
+            	},
+            	error:function(){
+            		console.log("댓글카운트 ajax 통신 실패");
+            	}
+            })
+       	}
 	    <%} %>
 	    
 	    // 게시글 삭제 함수
@@ -318,7 +399,47 @@
 	    	
 	    }
 	    
+	 // 댓글 작성 함수
+	    function insertReply(){
+	    	
+	    	$.ajax({
+	    		url:"insertReply.bo",
+	    		data:{
+	    			comment:$("#rContent").val(),
+	    			boardNo:bno
+	    		},
+	    		type:"post",
+	    		success:function(result){
+	    			if(result > 0){
+	    				selectReplyList();
+	    				$("#rContent").val("");
+	    			}
+	    		}
+	    		
+	    	})
+	    }
 	    
+	    
+     	// 댓글 삭제 함수
+		function deleteReply(e){
+        	let replyNo = e.next().val();
+        	
+        	if(confirm("댓글을 삭제하시겠습니까?")){
+        		$.ajax({
+        			url:"deleteReply.bo",
+        			data:{rno:replyNo},
+        			success:function(result){
+        				if(result > 0){
+        					selectReplyList();
+        				}
+        			},
+        			error:function(){
+        				console.log("댓글작성 ajax 통신 실패");
+        			}
+        		})
+        	}
+     
+        }
 	    
 	    
 	   

@@ -1,28 +1,27 @@
-package today.controller;
+package board.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import today.model.service.TodayService;
-import today.model.vo.Today;
+import com.google.gson.Gson;
+
+import board.model.service.BoardService;
 
 /**
- * Servlet implementation class TogetherDetailViewController
+ * Servlet implementation class AjaxAttachmentDelete
  */
-@WebServlet("/detail.tg")
-public class TogetherDetailViewController extends HttpServlet {
+@WebServlet("/deleteAttachment.ajax")
+public class AjaxAttachmentDelete extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TogetherDetailViewController() {
+    public AjaxAttachmentDelete() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,26 +31,17 @@ public class TogetherDetailViewController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String tno = request.getParameter("tno");
+		int fileNo = Integer.parseInt(request.getParameter("fileNo"));
 		
-		int result = new TodayService().increaseCount(tno);
-			
+		int result = new BoardService().deleteAttachment(fileNo);
 		
 		if(result > 0) {
-			Today t = new TodayService().selectTogether(tno);
-			ArrayList<Integer> list = new TodayService().togetherMemList(tno);
 			
-			request.setAttribute("t", t);
-			request.setAttribute("list", list);
-			
-
-			request.getRequestDispatcher("views/today/togetherDetailView.jsp").forward(request, response);
-			
+			new Gson().toJson('Y', response.getWriter());
 		}else {
-//			request.getSession().setAttribute("alertMsg", "게시글 조회에 실패하였습니다.");
-			response.sendRedirect(request.getContextPath() + "/list.tg");
+			
+			new Gson().toJson('N', response.getWriter());
 		}
-		
 	}
 
 	/**

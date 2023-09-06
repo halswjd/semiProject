@@ -80,6 +80,14 @@
 	, 2
 	)
 </entry>
+<entry key="insertEnrollTogether">
+	INSERT INTO TOGETHER
+	VALUES
+	(
+	  'T' || SEQ_TNO.CURRVAL
+	, ?
+	)
+</entry>
 <entry key="deleteTogether">
 	UPDATE TODAY
 	   SET STATUS = 'N'
@@ -103,4 +111,5 @@
 	  FROM TOGETHER
 	 WHERE REF_NO = ?
 </entry>
+
 </properties>

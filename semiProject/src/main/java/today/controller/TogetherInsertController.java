@@ -52,6 +52,7 @@ public class TogetherInsertController extends HttpServlet {
 			request.getSession().setAttribute("alertMsg", "글 작성에 실패하였습니다.");
 		}
 		response.sendRedirect(request.getContextPath() + "/list.tg");
+		
 	}
 
 	/**

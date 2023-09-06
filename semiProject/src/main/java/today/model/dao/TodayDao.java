@@ -247,6 +247,27 @@ private Properties prop = new Properties();
 		return list;
 		
 	}
+	
+	public int insertEnrollTogether(Connection conn, int uno) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("insertEnrollTogether");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, uno);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(conn);
+		}
+		return result;
+	}
 }
 
 

@@ -1,4 +1,4 @@
-package today.controller;
+package board.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,20 +9,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import today.model.service.TodayService;
-import today.model.vo.Today;
+import com.google.gson.Gson;
+
+import board.model.service.BoardService;
+import board.model.vo.Board;
 
 /**
- * Servlet implementation class TogetherDetailViewController
+ * Servlet implementation class BoardSearchController
  */
-@WebServlet("/detail.tg")
-public class TogetherDetailViewController extends HttpServlet {
+@WebServlet("/search.bo")
+public class BoardSearchController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TogetherDetailViewController() {
+    public BoardSearchController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,26 +34,14 @@ public class TogetherDetailViewController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String tno = request.getParameter("tno");
+		int option = Integer.parseInt(request.getParameter("option"));
+		String keyword = request.getParameter("keyword");
 		
-		int result = new TodayService().increaseCount(tno);
-			
+		ArrayList<Board> list = new BoardService().searchBoard(option, keyword);
 		
-		if(result > 0) {
-			Today t = new TodayService().selectTogether(tno);
-			ArrayList<Integer> list = new TodayService().togetherMemList(tno);
-			
-			request.setAttribute("t", t);
-			request.setAttribute("list", list);
-			
-
-			request.getRequestDispatcher("views/today/togetherDetailView.jsp").forward(request, response);
-			
-		}else {
-//			request.getSession().setAttribute("alertMsg", "게시글 조회에 실패하였습니다.");
-			response.sendRedirect(request.getContextPath() + "/list.tg");
-		}
+		response.setContentType("application/json; charset=utf-8");
 		
+		new Gson().toJson(list, response.getWriter());
 	}
 
 	/**

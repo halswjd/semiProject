@@ -25,8 +25,11 @@
             /* border: 1px solid red; */
             margin: auto;
             font-family: 'NanumBarunGothic';
+            overflow: hidden;
+            padding-bottom:150px;
         }
-       
+        
+
         .list>div{
             /* border: 1px solid black; */
             width: 33.3%;
@@ -155,6 +158,6 @@
         })
     </script>
 
-
+	<%@ include file="../common/footerbar.jsp" %>
 </body>
 </html>

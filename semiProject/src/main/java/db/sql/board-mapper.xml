@@ -20,7 +20,7 @@
 	      , BOARD_CONTENT
 	      , NICKNAME
 	      , CATEGORY_NAME
-	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') AS "CREATE_DATE"
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
 	      , COUNT
 	      , HASHTAG
 	      , USER_NO
@@ -80,7 +80,8 @@
 	      , BOARD_TITLE
 	      , NICKNAME
 	      , COUNT
-	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') AS "CREATE_DATE"
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
+	      , USER_NO
 	      , (
 	          SELECT COUNT(*)
 	            FROM REPLY
@@ -107,7 +108,8 @@
 	      , BOARD_TITLE
 	      , NICKNAME
 	      , COUNT
-	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD') AS "CREATE_DATE"
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
+	      , USER_NO
 	      , (
 	          SELECT COUNT(*)
 	            FROM REPLY
@@ -134,7 +136,7 @@
           , USER_NO
 	      , REPLY_CONTENT
 	      , NICKNAME
-	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH:MI') "CREATE_DATE"
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') "CREATE_DATE"
 	  FROM REPLY R
 	  JOIN MEMBER ON (REPLY_WRITER = USER_NO)
 	 WHERE R.STATUS = 'Y'
@@ -286,5 +288,97 @@
 	  , 2
 	  )
 </entry>
-
+<entry key="searchTitleContent">
+	SELECT
+	        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
+	      , CATEGORY_NAME
+	      , BOARD_TITLE
+	      , NICKNAME
+	      , COUNT
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
+	      , USER_NO
+	      , (
+	          SELECT COUNT(*)
+	            FROM REPLY
+	           WHERE REF_BNO = B.BOARD_NO
+	             AND STATUS = 'Y'
+	       ) AS "REPLY_COUNT"
+	       , (
+	         SELECT COUNT(*)
+	           FROM LIKES L
+	         WHERE L.BOARD_NO = B.BOARD_NO
+	       ) AS "LIKE_COUNT"
+	  FROM BOARD B
+	  JOIN CATEGORY USING (CATEGORY_NO)
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE BOARD_TYPE = 1
+	   AND B.STATUS = 'Y'
+       AND BOARD_TITLE LIKE '%'|| ? || '%'
+        OR BOARD_CONTENT LIKE '%' || ? ||'%'
+	 ORDER
+	    BY BOARD_NO DESC
+</entry>
+<entry key="searchTitle">
+	SELECT
+	        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
+	      , CATEGORY_NAME
+	      , BOARD_TITLE
+	      , NICKNAME
+	      , COUNT
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
+	      , USER_NO
+	      , (
+	          SELECT COUNT(*)
+	            FROM REPLY
+	           WHERE REF_BNO = B.BOARD_NO
+	             AND STATUS = 'Y'
+	       ) AS "REPLY_COUNT"
+	       , (
+	         SELECT COUNT(*)
+	           FROM LIKES L
+	         WHERE L.BOARD_NO = B.BOARD_NO
+	       ) AS "LIKE_COUNT"
+	  FROM BOARD B
+	  JOIN CATEGORY USING (CATEGORY_NO)
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE BOARD_TYPE = 1
+	   AND B.STATUS = 'Y'
+       AND BOARD_TITLE LIKE '%'|| ? || '%'
+	 ORDER
+	    BY BOARD_NO DESC
+</entry>
+<entry key="searchNickname">
+	SELECT
+	        TO_NUMBER(SUBSTR(BOARD_NO,2)) "BOARD_NO"
+	      , CATEGORY_NAME
+	      , BOARD_TITLE
+	      , NICKNAME
+	      , COUNT
+	      , TO_CHAR(CREATE_DATE, 'YY/MM/DD HH24:MI') AS "CREATE_DATE"
+	      , USER_NO
+	      , (
+	          SELECT COUNT(*)
+	            FROM REPLY
+	           WHERE REF_BNO = B.BOARD_NO
+	             AND STATUS = 'Y'
+	       ) AS "REPLY_COUNT"
+	       , (
+	         SELECT COUNT(*)
+	           FROM LIKES L
+	         WHERE L.BOARD_NO = B.BOARD_NO
+	       ) AS "LIKE_COUNT"
+	  FROM BOARD B
+	  JOIN CATEGORY USING (CATEGORY_NO)
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE BOARD_TYPE = 1
+	   AND B.STATUS = 'Y'
+       AND NICKNAME LIKE '%'|| ? || '%'
+	 ORDER
+	    BY BOARD_NO DESC
+</entry>
+<entry key="countLike">
+	SELECT COUNT(*) "COUNT"
+	  FROM LIKES
+	 WHERE BOARD_NO = ?
+</entry>
 </properties>

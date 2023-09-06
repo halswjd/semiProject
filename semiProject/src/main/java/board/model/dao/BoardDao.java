@@ -54,7 +54,8 @@ public class BoardDao {
 								   rset.getString("category_name"),
 								   rset.getString("create_date"),
 								   rset.getInt("like_count"),
-								   rset.getInt("reply_count")));
+								   rset.getInt("reply_count"),
+								   rset.getInt("user_no")));
 			}
 			
 		} catch (SQLException e) {
@@ -333,7 +334,8 @@ public class BoardDao {
 						   rset.getString("category_name"),
 						   rset.getString("create_date"),
 						   rset.getInt("like_count"),
-						   rset.getInt("reply_count")));
+						   rset.getInt("reply_count"),
+						   rset.getInt("user_no")));
 				
 			}
 			
@@ -695,6 +697,109 @@ public class BoardDao {
 			close(pstmt);
 		}
 		return result;
+	}
+	
+	public int deleteAttachment(Connection conn, int fileNo) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("deleteAttachment");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, fileNo);
+			
+			result = pstmt.executeUpdate();
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		return result;
+		
+	}
+	
+	public ArrayList<Board> searchBoard(Connection conn, int option, String keyword){
+		
+		ArrayList<Board> list = new ArrayList<Board>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		try {
+		if(option == 1) { // 제목 + 내용
+			String sql = prop.getProperty("searchTitleContent");
+			
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, keyword);
+				pstmt.setString(2, keyword);
+				
+		}else if(option == 2) { // 제목
+			String sql = prop.getProperty("searchTitle");
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, keyword);
+			
+		}else if(option == 3) { // 닉네임
+			String sql = prop.getProperty("searchNickname");
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, keyword);
+			
+		}
+		
+		rset = pstmt.executeQuery();
+		
+		while(rset.next()) {
+			list.add(new Board(rset.getInt("board_no"),
+							   rset.getString("board_title"),
+							   rset.getInt("count"),
+							   rset.getString("nickname"),
+							   rset.getString("category_name"),
+							   rset.getString("create_date"),
+							   rset.getInt("like_count"),
+							   rset.getInt("reply_count"),
+							   rset.getInt("user_no")));
+		}
+		
+		
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return list;
+	}
+	
+	public int countLike(Connection conn, String boardNo) {
+		
+		int count = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("countLike");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, boardNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				count = rset.getInt("count");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return count;
 	}
 	
 	

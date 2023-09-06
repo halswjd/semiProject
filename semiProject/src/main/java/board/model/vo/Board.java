@@ -37,7 +37,7 @@ public class Board {
 	}
 
 	public Board(int boardNo, String boardTitle, int count, String boardWriter, String category, String createDate,
-			int likeCount, int replyCount) {
+			int likeCount, int replyCount, int userNo) {
 		super();
 		this.boardNo = boardNo;
 		this.boardTitle = boardTitle;
@@ -47,6 +47,7 @@ public class Board {
 		this.createDate = createDate;
 		this.likeCount = likeCount;
 		this.replyCount = replyCount;
+		this.userNo = userNo;
 	}
 	
 

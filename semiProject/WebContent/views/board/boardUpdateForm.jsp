@@ -127,7 +127,7 @@
 	<%@ include file="../common/menubar.jsp" %>
     <div class="outer">
         <div class="wrap">
-        	<h1 align="center" id="ttl">자유게시판 작성</h1>
+        	<h1 align="center" id="ttl">자유게시판 수정</h1>
             <form action="<%= contextPath %>/update.bo" id="update-form" method="post" enctype="multipart/form-data">
             	<input type="hidden" value="<%= b.getBoardNo() %>" name="boardNo">
                 <div>
@@ -150,16 +150,15 @@
                 </div>
                 <div id="hashtag">
                     <!-- <div class="inHashtag"></div> -->
-                    <% if(hashtagList != null){%>
+                    <% if(hashtagList[0] != null){%>
                         <% for(String s:hashtagList){%>
                             <div class='inHashtag'># <%= s%></div>
                         <%} %>
                 </div>
-                    <button type="button" id="hashtagDelete" onclick="hashtagReset();" style="display:"";">지우기</button>
+                    <button type="button" id="hashtagDelete" onclick="hashtagReset();" style="display:''";>지우기</button>
                     <%}%>
                 <button type="button" id="hashtagDelete" onclick="hashtagReset();" style="display: none;">지우기</button>
-                <input type="hidden" name="hashtagArr" id="result" value="<%= b.getHashtag()%>">
-                
+                <input type="hidden" name="hashtagArr" id="result" value="">
                 <script>
                 
                 	// 해시태그 작성 함수
@@ -168,7 +167,8 @@
                             inputHashtag();
                         }
                     });
-
+					
+                	let hashatag = "<%= b.getHashtag()%>";
                     let input = "";
                     let result = [];
                     function inputHashtag(){
@@ -200,10 +200,10 @@
                    		<%for(int j=0; j<list.size(); j++){ %>
                             <div class="img-div">
                                 <img class="test" src="<%=contextPath %>/<%=list.get(j).getFilePath() %>/<%=list.get(j).getChangeName() %>" id="contentImg<%=j+1 %>" height="135" width="150" onclick="chooseFile(<%= j+1 %>);" >
-                                <button class="img-delete-btn" type="button" onclick="deleteImg(<%=j+1%>);">x</button>
+                                <button class="img-delete-btn" type="button" onclick="deleteImg(<%=j+1%>,this);">x</button>
                                 <input type="hidden" name="file<%=j+1 %>No" value="<%= list.get(j).getFileNo()%>">
                             </div>
-                            <%} %>
+                        <%} %>
                    		<%for(int i = list.size()+1; i<=3; i++){ %>
                    			<img src="" id="contentImg<%=i %>" height="135" width="150" onclick="chooseFile(<%= i %>);" >                   			
                    		<%} %>
@@ -213,13 +213,6 @@
                         <input type="file" id="file2" name="file2" onchange="loadImg(this, 2);">
                         <input type="file" id="file3" name="file3" onchange="loadImg(this, 3);">
                     </div>
-					
-					<script>
-					$(function(){
-						console.dir($("#file1"));
-						console.dir($("#file2"));
-					})
-					</script>
 					
                 </div>
 
@@ -259,9 +252,6 @@
                			}
                		})
                		
-               		
-               		
-               		
                	})
                 
                 
@@ -272,9 +262,6 @@
                 }
 				
                 function loadImg(inputFile, num){
-						console.dir(inputFile);
-						console.log(inputFile.files);
-						console.log(inputFile.files[0]);
                 	
            			let a = "#contentImg" + num;
                 	if(inputFile.files.length == 1){
@@ -292,11 +279,27 @@
                 }
                 
                 
-                function deleteImg(num){
+                function deleteImg(num, e){
                 	
                 	let a = "#contentImg" + num;
                 	$(a).attr("src", null);
-                }     
+                	$(e).css("display","none");
+                	
+                	let fileNo = $(e).next().val();
+                	
+                	$.ajax({
+                		url:"deleteAttachment.ajax",
+                		data:{fileNo:fileNo},
+                		success:function(){
+                			console.log("파일 삭제 ajax 통신 성공");
+                		},
+                		error:function(){
+                			console.log("파일 삭제 ajax 통신 실패");
+                		}
+                	})
+                	
+                }
+
              </script>
         </div>
     </div>

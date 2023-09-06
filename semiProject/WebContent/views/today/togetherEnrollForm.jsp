@@ -83,7 +83,7 @@
                 <span id="ff4">모집인원</span>
                 <br>
                 <select name="people" required>
-                    <option value="제한없음">제한없음</option>
+                    <option value="100">제한없음</option>
                     <option value="1">1명</option>
                     <option value="3">3명</option>
                     <option value="5" selected>5명</option>

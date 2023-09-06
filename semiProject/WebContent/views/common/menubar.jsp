@@ -145,8 +145,11 @@
                 // 해당 페이지 스타일부여하는 함수
                 const a = location.href;
                 
-                const b = ["/listView.bo", "/detail.bo", "/enrollForm.bo"];
-                const c = ["/list.tg", "/detail.tg", "/enrollFormView.tg"];
+                const b = ["/listView.bo", "/detail.bo", "/enrollForm.bo", "/updateView.bo"]; // 자유게시판
+                const c = ["/list.tg", "/detail.tg", "/enrollFormView.tg"]; // 같이 등산행
+                const d = []; // 오등완
+                const e = []; // 한국의 산
+                const f = []; // 공지사항
                 
                 
                 console.log(b[1]);

@@ -55,8 +55,15 @@ public class TodayService {
 		Connection conn = getConnection();
 		
 		int result = new TodayDao().insertTogether(conn, t);
+		int result2 = 0;
 		
 		if(result > 0) {
+			int uno = Integer.parseInt(t.getTodayWriter());
+			result2 = new TodayDao().insertEnrollTogether(conn, uno);			
+		}
+		
+		
+		if(result > 0 && result2 > 0) {
 			commit(conn);
 		}else {
 			rollback(conn);

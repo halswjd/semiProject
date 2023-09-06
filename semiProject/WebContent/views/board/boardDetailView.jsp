@@ -35,6 +35,7 @@
             /* border: 1px solid red; */
             margin: auto;
             font-family: 'NanumBarunGothic';
+            overflow: hidden;
         }
         #header, #bar {
             border: none;
@@ -180,8 +181,8 @@
             <%}else{ %>
             <div id="bar" align="right">
                 <button type="button" data-toggle="modal" data-target="#reportBoard">신고</button>
-                <button id="like1" onclick="insertLike();">좋아요 🤍</button>
-                <button id="like2" style="display: none;" onclick="deleteLike();">좋아요 💚</button>
+                <button id="like1" onclick="insertLike();">🤍 <span class="countLike" style="font-size:15px;">0</span></button>
+                <button id="like2" style="display: none;" onclick="deleteLike();">💚 <span class="countLike" style="font-size:15px;">10</span></button>
                 <button id="bookmark1" onclick="insertBook();"><img src="resources/image/bookmark_blank.png" width="25" height="25"></button>
                 <button id="bookmark2" onclick="deleteBook();" style="display: none;"><img src="resources/image/bookmark.png" width="25" height="25"></button>
             </div>
@@ -228,6 +229,7 @@
 	                if(result == 'Y'){
 	                	$("#like1").css("display", "none");
 	                    $("#like2").css("display", "");
+		                likeCount(); 
 	                }
 	            },
 	            error:function(){
@@ -247,6 +249,7 @@
                          if(result == 'Y'){
                          	$("#like2").css("display", "none");
                              $("#like1").css("display", "");
+	                         likeCount();
                          }
                      },
                      error:function(){
@@ -298,8 +301,20 @@
             	
         }
         
+        function likeCount(){
+        	
+        	$.ajax({
+        		url:"countLike.bo",
+        		data:{boardNo:bno},
+        		success:function(count){
+        			$(".countLike").text(count);
+        		}
+        	})
+        }
+        
         $(function(){
         	selectReplyList();
+        	likeCount();
             	
         // 북마크, 좋아요 체크 함수
 	            $.ajax({
@@ -337,54 +352,67 @@
 	                    console.log("실패");
 	                }
 	            })
+	            
+	            
         })   
         
-    	function selectReplyList(){
-       	
-	    	// 댓글 리스트
-            let charHtml = "";
-            
-            $.ajax({
-            	url:"replyList.bo",
-            	data:{boardNo:bno},
-            	success:function(list){
-            		console.log("댓글 메소드 탐");
-            		for(let i=0; i<list.length; i++){
-	            		charHtml += "<div class='comment-area1'>"
-	            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
-	            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>"
-	            				  + "<div class='cmt_etc'>" + list[i].createDate;
-            				  if(userNo == list[i].userNo){
-	            				  charHtml += "<p class='deleteReply-btn' onclick='deleteReply($(this));'>삭제</p>"
-	            				  		   + "<input type='hidden' value='" + list[i].replyNo + "'>"
-	            					 	   + "</div></div>"; 
-            				  }else{
-            					  charHtml += "</div></div>";
-            				  }
-	            				  
-            		}
-            		
-            		$("#comment-list").html(charHtml);
-            		
-            	},
-            	error:function(){
-            		console.log("댓글 불러오기 실패");
-            	}
-            	
-            })
-            
-            // 댓글 갯수
-            $.ajax({
-            	url:"countReply.bo",
-            	data:{boardNo:bno},
-            	success:function(result){
-            		$("#countReply").text(result);
-            	},
-            	error:function(){
-            		console.log("댓글카운트 ajax 통신 실패");
-            	}
-            })
-       	}
+	    	function selectReplyList(){
+	       	
+	        	// 오늘날짜
+				let today = new Date();
+				let year = today.getFullYear();
+				let month = ('0' + (today.getMonth() + 1)).slice(-2);
+				let day = ('0' + today.getDate()).slice(-2);			
+				let dateString = year + '/' + month  + '/' + day;
+        	
+		    	// 댓글 리스트
+	            let charHtml = "";
+	            
+	            $.ajax({
+	            	url:"replyList.bo",
+	            	data:{boardNo:bno},
+	            	success:function(list){
+	            		console.log("댓글 메소드 탐");
+	            		for(let i=0; i<list.length; i++){
+		            		charHtml += "<div class='comment-area1'>"
+		            				  + "<div class='cmt_id'>" + list[i].replyWriter + "</div>"
+		            				  + "<div class='cmt_txt'>" + list[i].replyContent + "</div>";
+		            			 if('20' + list[i].createDate.substr(0,8) == dateString){
+		            		charHtml += "<div class='cmt_etc'>" + list[i].createDate.substr(9);
+		            			 }else{
+		            		charHtml += "<div class='cmt_etc'>" + list[i].createDate;		 
+		            			 }
+	            				  if(userNo == list[i].userNo){
+		            				  charHtml += "<p class='deleteReply-btn' onclick='deleteReply($(this));'>삭제</p>"
+		            				  		   + "<input type='hidden' value='" + list[i].replyNo + "'>"
+		            					 	   + "</div></div>"; 
+	            				  }else{
+	            					  charHtml += "</div></div>";
+	            				  }
+		            				  
+	            		}
+	            		
+	            		$("#comment-list").html(charHtml);
+	            		
+	            	},
+	            	error:function(){
+	            		console.log("댓글 불러오기 실패");
+	            	}
+	            	
+	            })
+	            
+	            // 댓글 갯수
+	            $.ajax({
+	            	url:"countReply.bo",
+	            	data:{boardNo:bno},
+	            	success:function(result){
+	            		$("#countReply").text(result);
+	            	},
+	            	error:function(){
+	            		console.log("댓글카운트 ajax 통신 실패");
+	            	}
+	            })
+	       	}
 	    	
 	    
 	    <%}%> 

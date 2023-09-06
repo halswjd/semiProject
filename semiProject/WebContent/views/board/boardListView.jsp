@@ -153,7 +153,7 @@ button>img {
 	color: red;
 	font-size: 13px;
 	font-weight: bolder;
-	border: 1px solid lightgray;
+	border: 1px solid rgb(185,185,185);
 	border-radius: 45%;
 	display: inline-block;
 	width: 25px;
@@ -211,18 +211,23 @@ button>img {
 				<div id="search">
 					<form action="">
 						<select name="" id="search-option">
-							<option value="">제목+내용</option>
-							<option value="">글제목</option>
-							<option value="">글쓴이</option>
-							<option value="">댓글내용</option>
+							<option value="1">제목+내용</option>
+							<option value="2">글제목</option>
+							<option value="3">글쓴이</option>
 						</select>
 
 						<div id="box-search">
 							<input type="text" placeholder=" 검색어를 입력하세요">
 							<!-- <button type="submit">검색</button> -->
-							<button type="submit" class="img-button">
-								<img src="<%= contextPath %>/resources/image/search.png" alt="">
-							</button>
+							<%if(loginMember != null){ %>
+								<button type="button" class="img-button" id="search-btn">
+									<img src="<%= contextPath %>/resources/image/search.png" alt="">
+								</button>
+							<%}else{ %>
+								<button type="button" class="img-button" onclick="loginAlert();">
+									<img src="<%= contextPath %>/resources/image/search.png" alt="">
+								</button>
+							<%} %>
 						</div>
 					</form>
 				</div>
@@ -287,7 +292,7 @@ button>img {
 	</div>
 	<script>
 		function loginAlert() {
-			alert('로그인 후 이용가능합니다 ~!');
+			alert('로그인 후 이용가능합니다.');
 		}
 		
 		// 카테고리 불러오는 함수
@@ -386,29 +391,54 @@ button>img {
 			let day = ('0' + today.getDate()).slice(-2);			
 			let dateString = year + '/' + month  + '/' + day;
 			
-			console.log("오늘날짜" + dateString);
-			
-			
-			for (let i = start; i < end && i<listCount; i++) {
-
-				charHtml += '<tr align="center">'
-						+ '<td width="80" style="color: gray;">'+ dataList[i].boardNo + '</td>' 
-						+ '<td width="60">[' + dataList[i].category + ']</td>';
-						
-				if(dataList[i].replyCount == 0){
-					charHtml += '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '</td>' 
-				}else{
-					charHtml += '<td align="left" style="padding-left : 10px;">'+ dataList[i].boardTitle + '<span>' + dataList[i].replyCount + '</span></td>' 
+			<%if(loginMember!= null){%>
+				let userNo = <%=loginMember.getUserNo()%>;
+				for (let i = start; i < end && i<listCount; i++) {
+					if(userNo==dataList[i].userNo){
+					charHtml += '<tr align="center" style="font-weight:bolder; background-color:rgb(248, 248, 248);">';					
+					}else{
+					charHtml += '<tr align="center" >';					
+					}
+							
+					charHtml += '<td width="80" style="color: gray;">'+ dataList[i].boardNo + '</td>' 
+							 + '<td width="60">[' + dataList[i].category + ']</td>';
+							
+					if(dataList[i].replyCount == 0){
+						charHtml += '<td align="left" style="padding-left : 25px;">'+ dataList[i].boardTitle + '</td>' 
+					}else{
+						charHtml += '<td align="left" style="padding-left : 25px;">'+ dataList[i].boardTitle + '<span>' + dataList[i].replyCount + '</span></td>' 
+					}
+						charHtml += '<td>'+ dataList[i].boardWriter + '</td>' ;
+					if('20' + dataList[i].createDate.substr(0,8) == dateString){
+						charHtml += '<td>'+ dataList[i].createDate.substr(9) +'</td>';					
+					}else{
+						charHtml += '<td>'+ dataList[i].createDate.substr(0,8) + '</td>';
+					}
+						charHtml += '<td>'+ dataList[i].likeCount + '</td>' 
+								 + '<td>'+ dataList[i].count + '</td>' + '</tr>';
 				}
-					charHtml += '<td>'+ dataList[i].boardWriter + '</td>' ;
-				if('20' + dataList[i].createDate.substr(0,8) == dateString){
-					charHtml += '<td>'+ dataList[i].createDate.substr(9) +'</td>';					
-				}else{
-					charHtml += '<td>'+ dataList[i].createDate.substr(0,8) + '</td>';
+			<%}else{%>
+				for (let i = start; i < end && i<listCount; i++) {
+					
+					charHtml += '<tr align="center" >'				
+							 + '<td width="80" style="color: gray;">'+ dataList[i].boardNo + '</td>' 
+							 + '<td width="60">[' + dataList[i].category + ']</td>';
+							
+					if(dataList[i].replyCount == 0){
+						charHtml += '<td align="left" style="padding-left : 25px;">'+ dataList[i].boardTitle + '</td>' 
+					}else{
+						charHtml += '<td align="left" style="padding-left : 25px;">'+ dataList[i].boardTitle + '<span>' + dataList[i].replyCount + '</span></td>' 
+					}
+						charHtml += '<td>'+ dataList[i].boardWriter + '</td>' ;
+					if('20' + dataList[i].createDate.substr(0,8) == dateString){
+						charHtml += '<td>'+ dataList[i].createDate.substr(9) +'</td>';					
+					}else{
+						charHtml += '<td>'+ dataList[i].createDate.substr(0,8) + '</td>';
+					}
+						charHtml += '<td>'+ dataList[i].likeCount + '</td>' 
+								 + '<td>'+ dataList[i].count + '</td>' + '</tr>';
 				}
-					charHtml += '<td>'+ dataList[i].likeCount + '</td>' 
-							 + '<td>'+ dataList[i].count + '</td>' + '</tr>';
-			}
+			<%}%>
 
 			$(".list-area").children("tbody").html(charHtml);
 		}
@@ -499,6 +529,31 @@ button>img {
 		function insertBoard(){
 			location.href="<%=contextPath%>/enrollForm.bo";
 		}
+		
+		// 게시글 검색
+		$("#search-btn").click(function(){
+			
+			let searchOpt = $("#search-option option:selected").val();
+			let search = $("#box-search input[type=text]").val();
+			
+			$.ajax({
+				url:"search.bo",
+				data:{option:searchOpt, keyword:search},
+				success:function(list){
+					listCount = list.length;
+					dataList = list;
+					$("#box-search input[type=text]").val("");
+					
+					// 글 목록 불러오기 호출
+					displayData(1, boardLimit);
+					// 페이징 표시 호출
+					paging(listCount, boardLimit, pageLimit, 1);
+				},
+				error:function(){
+					console.log("검색 조회 ajax 실패");
+				}
+			})
+		})
 		
 	</script>
 	

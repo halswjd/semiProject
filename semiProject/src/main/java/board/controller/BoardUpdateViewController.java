@@ -38,7 +38,6 @@ public class BoardUpdateViewController extends HttpServlet {
 		Board b = new BoardService().selectBoard(boardNo);
 		ArrayList<Attachment> list = new BoardService().boardImgList("B"+boardNo);
 		
-		
 		request.setAttribute("b", b);
 		request.setAttribute("list", list);
 		
